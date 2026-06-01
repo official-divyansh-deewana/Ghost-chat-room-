@@ -1,14 +1,4 @@
-
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>index.html</title>
-    <style></style>
-</head>
-<body>
-    <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -51,7 +41,7 @@
     body.theme-cyberpunk {
       --bg-gradient: linear-gradient(135deg, #0a0a0c 0%, #1c0c1e 100%);
       --panel-bg: rgba(15, 15, 19, 0.85);
-      --panel-border: rgba(24d, 224, 71, 0.25);
+      --panel-border: rgba(243, 224, 71, 0.25);
       --text-main: #fde047;
       --text-muted: #06b6d4;
       --accent-color: #06b6d4;
@@ -541,6 +531,9 @@
       border-radius: 12px;
       margin: 0.5rem 0;
       border: 1px solid var(--panel-border);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
     }
 
     /* Bottom Input Panel */
@@ -691,7 +684,7 @@
     <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">Syncing with GhostRoom...</p>
   </div>
 
-  <!-- LOBBY SCREEN (Create / Join Switchboard) -->
+  <!-- LOBBY SCREEN -->
   <div id="lobby-screen" class="screen active">
     <div class="glass-card">
       <div class="logo-container">
@@ -758,7 +751,7 @@
     </div>
   </div>
 
-  <!-- ENTRANCE SCREEN (Pre-entry validations / Name & Password) -->
+  <!-- ENTRANCE SCREEN -->
   <div id="entrance-screen" class="screen">
     <div class="glass-card">
       <div class="logo-container">
@@ -828,7 +821,7 @@
           <!-- Populated dynamically -->
         </div>
 
-        <!-- Hidden Side Drawer: User list list -->
+        <!-- Hidden Side Drawer -->
         <div class="members-drawer" id="members-drawer">
           <h3>Participants</h3>
           <ul class="member-list" id="member-list">
@@ -872,27 +865,25 @@
 
   <script>
     /* ==========================================================================
-       FIREBASE CONFIGURATION & INITIALIZATION
+       FIREBASE CONFIGURATION
        ========================================================================== */
-    // Placeholders to be updated by the deploying administrator
     const firebaseConfig = {
-    apiKey: "AIzaSyCOFm2XLXs8QW9ZZ2x4HeIJV6LOX0qfjB0",
-    authDomain: "chat-room-by-dev.firebaseapp.com",
-    databaseURL: "https://chat-room-by-dev-default-rtdb.firebaseio.com",
-    projectId: "chat-room-by-dev",
-    storageBucket: "chat-room-by-dev.firebasestorage.app",
-    messagingSenderId: "914264958238",
-    appI
+      apiKey: "AIzaSyCOFm2XLXs8QW9ZZ2x4HeIJV6LOX0qfjB0",
+      authDomain: "chat-room-by-dev.firebaseapp.com",
+      databaseURL: "https://chat-room-by-dev-default-rtdb.firebaseio.com",
+      projectId: "chat-room-by-dev",
+      storageBucket: "chat-room-by-dev.firebasestorage.app",
+      messagingSenderId: "914264958238",
+      appId: "1:914264958238:web:0dfa83d3319800d1bc719c"
+    };
 
     // Instantiate compat application
     let db;
     try {
-      if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.database();
-      }
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
     } catch (e) {
-      console.error("Firebase Initialization Failed: Verify configuration block.", e);
+      console.error("Firebase Initialization Failed:", e);
     }
 
     /* ==========================================================================
@@ -940,7 +931,7 @@
           oscNode.stop(audioCtx.currentTime + 0.1);
         }
       } catch (err) {
-        // Prevent silent failure errors on user-interaction restrictions
+        // Safe bypass on interaction restrictions
       }
     }
 
@@ -948,9 +939,8 @@
        PAGE LIFECYCLE & INITIALIZATION
        ========================================================================== */
     window.addEventListener('DOMContentLoaded', () => {
-      // Fast check database config status
       if (!db) {
-        showToast("Local setup warning: Update Firebase configurations configuration keys.", "warning");
+        showToast("Configuration error detected.", "warning");
         document.getElementById('loading-overlay').style.display = 'none';
         return;
       }
@@ -958,10 +948,8 @@
       evaluateHashRouting();
       document.getElementById('loading-overlay').style.display = 'none';
 
-      // Event listener to shut down typing statuses on window close
       window.addEventListener('beforeunload', cleanupUserPresence);
 
-      // Handle message submission on key press
       document.getElementById('message-input').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           sendMessage();
@@ -970,7 +958,6 @@
         }
       });
 
-      // Clear Context Popups on page click
       document.addEventListener('click', (e) => {
         const menu = document.getElementById('host-context-menu');
         if (menu && !e.target.closest('.msg-meta') && !e.target.closest('.host-action-menu')) {
@@ -979,7 +966,6 @@
       });
     });
 
-    // Handle deep-linking through URL hashes
     function evaluateHashRouting() {
       const hash = window.location.hash.trim().substring(1);
       if (hash && hash.length > 5) {
@@ -1032,7 +1018,7 @@
       const durationSelect = document.getElementById('create-duration').value;
       
       if (!hostName || !roomName) {
-        showToast("Display Name and Room Name are mandatory properties.", "error");
+        showToast("Display Name and Room Name are required fields.", "error");
         return;
       }
 
@@ -1046,7 +1032,6 @@
       const createdAt = Date.now();
       const expiryTime = createdAt + expiryDurationMs;
 
-      // Register new room node
       const newRoomRef = db.ref('rooms').push();
       const roomId = newRoomRef.key;
 
@@ -1064,7 +1049,6 @@
         }
       };
 
-      // Set host properties securely inside current process
       const hostId = "user_" + Math.random().toString(36).substring(2, 11);
       myUserSession.id = hostId;
       myUserSession.name = hostName;
@@ -1073,7 +1057,6 @@
 
       newRoomRef.set(roomPayload)
         .then(() => {
-          // Write Host User Record to Firebase
           return db.ref(`rooms/${roomId}/users/${hostId}`).set({
             name: hostName,
             isHost: true,
@@ -1083,15 +1066,13 @@
           });
         })
         .then(() => {
-          // Store locally for single-entry verification
           storeSessionLocally(roomId, hostId, hostName, true);
-          
           window.location.hash = roomId;
           showToast("Room created successfully", "info");
           initializeChatroom(roomId);
         })
         .catch(err => {
-          showToast("Fatal error deploying chat space: " + err.message, "error");
+          showToast("Creation failed: " + err.message, "error");
         });
     }
 
@@ -1108,7 +1089,7 @@
         window.location.hash = matchedId;
         prepareEntranceScreen(matchedId);
       } else {
-        showToast("Invalid Room ID Format", "error");
+        showToast("Invalid Room ID", "error");
       }
     }
 
@@ -1116,34 +1097,30 @@
       currentRoomId = roomId;
       document.getElementById('loading-overlay').style.display = 'flex';
 
-      // Verify targeted room state first
       db.ref(`rooms/${roomId}/config`).once('value')
         .then(snapshot => {
           const config = snapshot.val();
           document.getElementById('loading-overlay').style.display = 'none';
 
           if (!config) {
-            showToast("Room does not exist or has expired.", "error");
+            showToast("Room has expired or does not exist.", "error");
             window.location.hash = '';
             showScreen('lobby-screen');
             return;
           }
 
-          // Check if system is expired
           if (Date.now() > config.expiryTime) {
-            showToast("Room validation expired.", "error");
+            showToast("Room has expired.", "error");
             teardownExpiredRoom(roomId);
             return;
           }
 
-          // Check session recovery
           const cachedSession = retrieveSessionLocally(roomId);
           if (cachedSession) {
             myUserSession.id = cachedSession.id;
             myUserSession.name = cachedSession.name;
             myUserSession.isHost = cachedSession.isHost;
             
-            // Verify status on DB directly
             db.ref(`rooms/${roomId}/users/${cachedSession.id}`).once('value')
               .then(userSnap => {
                 const uData = userSnap.val();
@@ -1156,14 +1133,12 @@
             return;
           }
 
-          // Lock check
           if (config.locked) {
-            showToast("This Room has been locked by the Host.", "warning");
+            showToast("Room is currently locked.", "warning");
             showScreen('lobby-screen');
             return;
           }
 
-          // Initialize custom input interface
           document.getElementById('entrance-room-title').innerText = config.name;
           if (config.password) {
             document.getElementById('entrance-password-group').style.display = 'block';
@@ -1175,7 +1150,7 @@
         })
         .catch(err => {
           document.getElementById('loading-overlay').style.display = 'none';
-          showToast("Access Resolution Failure: " + err.message, "error");
+          showToast("Resolution failed: " + err.message, "error");
         });
     }
 
@@ -1184,7 +1159,7 @@
       const enteredPass = document.getElementById('entrance-password').value.trim();
 
       if (!enteredName) {
-        showToast("User Name is required.", "warning");
+        showToast("Display Name is required.", "warning");
         return;
       }
 
@@ -1193,17 +1168,14 @@
           const config = snapshot.val();
           if (!config) return;
 
-          // Authenticate room pass
           if (config.password && config.password !== enteredPass) {
-            showToast("Incorrect Room Password.", "error");
+            showToast("Incorrect Password.", "error");
             return;
           }
 
-          // Ensure name unique constraint per-room context
           return db.ref(`rooms/${currentRoomId}/users`).once('value')
             .then(usersSnap => {
               let nameCollision = false;
-              let isSelfBanned = false;
 
               usersSnap.forEach(u => {
                 const user = u.val();
@@ -1213,11 +1185,10 @@
               });
 
               if (nameCollision) {
-                showToast("Name already active inside room.", "warning");
+                showToast("Name is already taken inside this room.", "warning");
                 return;
               }
 
-              // Register User Join Node
               const newUserId = "user_" + Math.random().toString(36).substring(2, 11);
               myUserSession.id = newUserId;
               myUserSession.name = enteredName;
@@ -1235,15 +1206,13 @@
               return db.ref(`rooms/${currentRoomId}/users/${newUserId}`).set(payload)
                 .then(() => {
                   storeSessionLocally(currentRoomId, newUserId, enteredName, false);
-                  
-                  // Post system entry message
-                  pushSystemMessage(`${enteredName} joined the room`);
+                  pushSystemMessage(`${enteredName} joined the room`, 'join');
                   initializeChatroom(currentRoomId);
                 });
             });
         })
         .catch(err => {
-          showToast("Registration Exception: " + err.message, "error");
+          showToast("Join registration failed: " + err.message, "error");
         });
     }
 
@@ -1254,27 +1223,20 @@
       currentRoomId = roomId;
       showScreen('chat-screen');
 
-      // Setup global configuration and theme state sync
       const configPathRef = db.ref(`rooms/${roomId}/config`);
       
       configPathRef.on('value', snapshot => {
         const config = snapshot.val();
         if (!config) {
-          showToast("Critical Error: Chat reference has been unlinked.", "error");
+          showToast("Room has expired or was removed.", "error");
           forceExitLobby();
           return;
         }
 
-        // Apply visual theme globally
         applyGlobalTheme(config.theme);
-
-        // Render Meta Info Headers
         document.getElementById('chat-room-title').innerText = config.name;
-        
-        // Render Expiry Countdown Clock
         updateCountdownTimer(config.expiryTime);
 
-        // Host Control Interface Adjustments
         if (myUserSession.isHost) {
           const lockBtn = document.getElementById('lock-room-btn');
           lockBtn.style.display = 'flex';
@@ -1282,7 +1244,6 @@
           document.getElementById('unpin-btn').style.display = 'block';
         }
 
-        // Render Pinned Messages
         const pinnedBanner = document.getElementById('pinned-banner');
         if (config.pinnedMessage) {
           pinnedBanner.classList.add('active');
@@ -1293,13 +1254,11 @@
         }
       });
 
-      // Synchronize Live Users List
       const usersRef = db.ref(`rooms/${roomId}/users`);
       usersRef.on('value', snapshot => {
         const users = snapshot.val() || {};
         renderParticipantIndicators(users);
 
-        // Check for self ban/mute status modification live
         const me = users[myUserSession.id];
         if (me) {
           if (me.banned) {
@@ -1310,15 +1269,11 @@
             adjustInputControlState(me.muted);
           }
         } else if (!myUserSession.isHost) {
-          // Fallback context validation
           showBanOverlay();
         }
       });
 
-      // Fetch, watch & render message events chronologically
       const messagesRef = db.ref(`rooms/${roomId}/messages`).orderByChild('timestamp');
-      
-      // Clean previous UI messages to prevent duplicates on reconnection
       document.getElementById('chat-messages').innerHTML = '';
 
       messagesRef.on('child_added', snapshot => {
@@ -1327,19 +1282,16 @@
         markMessageAsRead(snapshot.key);
       });
 
-      // Realtime listener for read/seen confirmations
       messagesRef.on('child_changed', snapshot => {
         const msg = snapshot.val();
         updateMessageReadStatusOnUI(snapshot.key, msg);
       });
 
-      // Monitor typist behaviors
       db.ref(`rooms/${roomId}/users`).on('value', snapshot => {
         const users = snapshot.val() || {};
         updateTypingLabels(users);
       });
 
-      // Start periodic countdown calculation
       const timerInterval = setInterval(() => {
         if (!currentRoomId) {
           clearInterval(timerInterval);
@@ -1355,14 +1307,14 @@
             }
           }
         });
-      }, 30000); // Poll once per 30s to preserve connection limits
+      }, 30000); 
     }
 
     /* ==========================================================================
        THEME APPLICATION LOGIC
        ========================================================================== */
     function applyGlobalTheme(themeName) {
-      document.body.className = ''; // Wipe pre-existing theme bindings
+      document.body.className = ''; 
       if (themeName !== 'dark-neon') {
         document.body.classList.add(`theme-${themeName}`);
       }
@@ -1404,7 +1356,7 @@
       let count = 0;
       Object.keys(usersObj).forEach(uId => {
         const user = usersObj[uId];
-        if (user.banned) return; // Hide banned entities
+        if (user.banned) return; 
 
         count++;
         const li = document.createElement('li');
@@ -1435,7 +1387,6 @@
       const rawInputText = document.getElementById('message-input').value.trim();
       if (!rawInputText) return;
 
-      // Local Content Filtering (Auto Moderation)
       const sanitizedText = filterContentInMessage(rawInputText);
 
       const payload = {
@@ -1451,12 +1402,11 @@
       db.ref(`rooms/${currentRoomId}/messages`).push(payload)
         .then(() => {
           document.getElementById('message-input').value = '';
-          // Reset local typing indicator
           if (localTypingTimeout) clearTimeout(localTypingTimeout);
           db.ref(`rooms/${currentRoomId}/users/${myUserSession.id}/typing`).set(false);
         })
         .catch(err => {
-          showToast("Failed to transmit text: " + err.message, "error");
+          showToast("Failed to send: " + err.message, "error");
         });
     }
 
@@ -1472,13 +1422,22 @@
       const chatFeed = document.getElementById('chat-messages');
       const isSelf = msgData.senderId === myUserSession.id;
 
-      // Handle raw state metrics additions
       incrementMessageCountOnUI();
 
       if (msgData.isSystem) {
         const sysDiv = document.createElement('div');
         sysDiv.className = 'system-msg';
-        sysDiv.innerText = msgData.text;
+        
+        let sysIcon = '<i class="fa-solid fa-circle-info"></i>';
+        if (msgData.systemType === 'join') {
+          sysIcon = '<i class="fa-solid fa-arrow-right-to-bracket"></i>';
+        } else if (msgData.systemType === 'leave') {
+          sysIcon = '<i class="fa-solid fa-door-open"></i>';
+        } else if (msgData.systemType === 'ban') {
+          sysIcon = '<i class="fa-solid fa-ban"></i>';
+        }
+
+        sysDiv.innerHTML = `${sysIcon} <span>${escapeHTML(msgData.text)}</span>`;
         chatFeed.appendChild(sysDiv);
         chatFeed.scrollTop = chatFeed.scrollHeight;
         emitChime('join');
@@ -1490,11 +1449,8 @@
       wrapper.id = `msg-${messageId}`;
 
       const timeString = new Date(msgData.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-      // Build out standard seen parameters
       const initialSeenByCount = msgData.seenBy ? Object.keys(msgData.seenBy).length : 1;
 
-      // Context menu action setup if Host triggers user click
       const userClickEventAction = myUserSession.isHost && !isSelf 
         ? `onclick="showHostContextMenu(event, '${msgData.senderId}', '${escapeHTML(msgData.senderName)}', '${messageId}')"` 
         : `onclick="setupHostPinFallback(event, '${messageId}')"`;
@@ -1581,7 +1537,7 @@
       pathRef.once('value').then(snap => {
         const currentVal = snap.val() || false;
         pathRef.set(!currentVal).then(() => {
-          showToast(!currentVal ? "Room locked. New entries blocked." : "Room access opened.", "info");
+          showToast(!currentVal ? "Room locked. Access blocked." : "Room unlocked.", "info");
         });
       });
     }
@@ -1595,7 +1551,6 @@
       menu.style.top = `${e.pageY}px`;
       menu.style.left = `${e.pageX}px`;
 
-      // Check current target mute state parameters to toggle text dynamically
       db.ref(`rooms/${currentRoomId}/users/${targetUserId}/muted`).once('value', snap => {
         const isMuted = snap.val() || false;
         document.getElementById('host-mute-btn').innerHTML = isMuted 
@@ -1603,7 +1558,6 @@
           : `Mute @${userName}`;
       });
 
-      // Inject Pin / Host parameters directly to Context options
       let pinActionBtn = document.getElementById('host-pin-btn');
       if (!pinActionBtn) {
         pinActionBtn = document.createElement('button');
@@ -1615,7 +1569,6 @@
     }
 
     function setupHostPinFallback(e, messageId) {
-      // Allows non-hosts to view details but only lets hosts pin messages
       if (!myUserSession.isHost) return;
       
       e.preventDefault();
@@ -1654,11 +1607,11 @@
 
     function triggerBanAction() {
       if (!selectedUserContext) return;
-      if (confirm(`Confirm ban on user: @${selectedUserContext.name}?`)) {
+      if (confirm(`Confirm ban on: @${selectedUserContext.name}?`)) {
         db.ref(`rooms/${currentRoomId}/users/${selectedUserContext.id}/banned`).set(true)
           .then(() => {
-            pushSystemMessage(`👋 User ${selectedUserContext.name} was banned`);
-            showToast(`User @${selectedUserContext.name} banned.`, "info");
+            pushSystemMessage(`User ${selectedUserContext.name} was banned`, 'ban');
+            showToast(`User banned.`, "info");
           });
       }
     }
@@ -1674,7 +1627,7 @@
               sender: mData.senderName,
               text: mData.text
             }).then(() => {
-              showToast("Message pinned to top.", "info");
+              showToast("Message pinned.", "info");
             });
           }
         });
@@ -1692,7 +1645,6 @@
        USER INTERACTION & BAN OVERLAY UI ACTIONS
        ========================================================================== */
     function showBanOverlay() {
-      // Clear persistent parameters
       clearLocalSession(currentRoomId);
       document.getElementById('ban-modal').classList.add('active');
     }
@@ -1716,7 +1668,7 @@
        ROOM EXIT & TEARDOWN PREPARATION
        ========================================================================== */
     function leaveRoom() {
-      if (confirm("Confirm exit from this temporary room context?")) {
+      if (confirm("Exit this conversation?")) {
         cleanupUserPresence()
           .then(() => {
             forceExitLobby();
@@ -1727,26 +1679,20 @@
     function cleanupUserPresence() {
       if (!currentRoomId || !myUserSession.id) return Promise.resolve();
       
-      // Post system announcement message
-      pushSystemMessage(`${myUserSession.name} left the room`);
+      pushSystemMessage(`${myUserSession.name} left the room`, 'leave');
 
-      // De-register self node representation on exit
       return db.ref(`rooms/${currentRoomId}/users/${myUserSession.id}`).remove()
         .then(() => {
-          // If room has no active users remaining, initialize deletion check
           return db.ref(`rooms/${currentRoomId}/users`).once('value');
         })
         .then(snap => {
           if (!snap.exists()) {
-            // Immediately start a 10-minute cleanup timer, or clear outright.
-            // Client cleanup deletes room nodes completely to reduce trace impact
             return db.ref(`rooms/${currentRoomId}`).remove();
           }
         });
     }
 
     function forceExitLobby() {
-      // Clear active listeners to avoid processing orphaned updates
       if (currentRoomId) {
         db.ref(`rooms/${currentRoomId}/config`).off();
         db.ref(`rooms/${currentRoomId}/users`).off();
@@ -1763,11 +1709,12 @@
     /* ==========================================================================
        HELPER UTILITIES
        ========================================================================== */
-    function pushSystemMessage(messageText) {
+    function pushSystemMessage(messageText, sysType = 'info') {
       if (!currentRoomId) return;
       db.ref(`rooms/${currentRoomId}/messages`).push({
         text: messageText,
         isSystem: true,
+        systemType: sysType,
         timestamp: Date.now()
       });
     }
@@ -1790,7 +1737,7 @@
       const linkToCopy = window.location.href;
       navigator.clipboard.writeText(linkToCopy)
         .then(() => {
-          showToast("Shareable link copied to clipboard.", "info");
+          showToast("Invite link copied.", "info");
         })
         .catch(err => {
           showToast("Copy failed: " + err, "error");
@@ -1835,8 +1782,5 @@
       );
     }
   </script>
-</body>
-</html>
-    <script></script>
 </body>
 </html>
