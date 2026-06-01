@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GhostRoom — Premium Private Hub</title>
+  <title>GhostRoom — Premium Secure Chat Hub</title>
   
-  <!-- Premium Font -->
+  <!-- Premium Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -19,77 +19,105 @@
 
   <style>
     /* ==========================================================================
-       THEME ENGINE & STYLESHEET
+       THEME SYSTEM (Chatter Mockup UI Default)
        ========================================================================== */
     :root {
-      --bg-main: #f5f6fa;
+      --bg-main: #f3f4f9;
       --panel-bg: #ffffff;
       --panel-border: rgba(0, 0, 0, 0.05);
-      --text-main: #1f1d2c;
-      --text-muted: #8a889c;
-      --accent-color: #6200ea;
-      --accent-glow: 0 8px 24px rgba(98, 0, 234, 0.15);
-      --btn-grad: linear-gradient(135deg, #6200ea 0%, #4a00e0 100%);
-      --msg-self-bg: #6200ea;
+      --text-main: #2e2a4f;
+      --text-muted: #8e8ca2;
+      --accent-color: #5e35b1;
+      --accent-glow: 0 8px 24px rgba(94, 53, 177, 0.15);
+      --btn-grad: linear-gradient(135deg, #6f3cd3 0%, #512da8 100%);
+      --msg-self-bg: #5e35b1;
       --msg-other-bg: #ffffff;
-      --bubble-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-      --card-shadow: 0 20px 48px rgba(31, 29, 44, 0.06);
+      --bubble-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      --card-shadow: 0 16px 40px rgba(45, 42, 74, 0.08);
     }
 
-    body.theme-dark-neon {
-      --bg-main: #09090e;
-      --panel-bg: #12121e;
-      --panel-border: rgba(255, 255, 255, 0.08);
-      --text-main: #f3f4f6;
-      --text-muted: #8c8fa1;
-      --accent-color: #ff007f;
-      --accent-glow: 0 8px 24px rgba(255, 0, 127, 0.25);
-      --btn-grad: linear-gradient(135deg, #ff007f 0%, #7f00ff 100%);
-      --msg-self-bg: #ff007f;
-      --msg-other-bg: #1c1c2e;
-      --bubble-shadow: 0 4px 12px rgba(255, 0, 127, 0.1);
+    body.theme-cyan {
+      --bg-main: #0a141d;
+      --panel-bg: #14212d;
+      --panel-border: rgba(0, 242, 254, 0.15);
+      --text-main: #e1f5fe;
+      --text-muted: #81d4fa;
+      --accent-color: #00f2fe;
+      --accent-glow: 0 8px 24px rgba(0, 242, 254, 0.25);
+      --btn-grad: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+      --msg-self-bg: #00f2fe;
+      --msg-other-bg: #1e3040;
+      --bubble-shadow: 0 4px 15px rgba(0, 242, 254, 0.1);
     }
 
-    body.theme-cyberpunk {
-      --bg-main: #0b0c10;
-      --panel-bg: #1f2833;
-      --panel-border: rgba(102, 252, 241, 0.2);
-      --text-main: #66fcf1;
-      --text-muted: #c5c6c7;
-      --accent-color: #45f3ff;
-      --accent-glow: 0 8px 24px rgba(69, 243, 255, 0.25);
-      --btn-grad: linear-gradient(135deg, #1f2833 0%, #45f3ff 100%);
-      --msg-self-bg: #45f3ff;
-      --msg-other-bg: #0b0c10;
-      --bubble-shadow: 0 4px 12px rgba(69, 243, 255, 0.15);
+    body.theme-coffee {
+      --bg-main: #f5efe6;
+      --panel-bg: #ffffff;
+      --panel-border: rgba(141, 110, 99, 0.2);
+      --text-main: #4e342e;
+      --text-muted: #8d6e63;
+      --accent-color: #8d6e63;
+      --accent-glow: 0 8px 24px rgba(141, 110, 99, 0.15);
+      --btn-grad: linear-gradient(135deg, #8d6e63 0%, #4e342e 100%);
+      --msg-self-bg: #8d6e63;
+      --msg-other-bg: #efebe9;
+      --bubble-shadow: 0 4px 12px rgba(141, 110, 99, 0.06);
     }
 
-    body.theme-glass-blue {
-      --bg-main: #0a192f;
-      --panel-bg: rgba(17, 34, 64, 0.7);
-      --panel-border: rgba(100, 255, 218, 0.15);
-      --text-main: #e6f1ff;
-      --text-muted: #8892b0;
-      --accent-color: #64ffda;
-      --accent-glow: 0 8px 24px rgba(100, 255, 218, 0.2);
-      --btn-grad: linear-gradient(135deg, #0f1b29 0%, #64ffda 100%);
-      --msg-self-bg: #64ffda;
-      --msg-other-bg: rgba(23, 42, 69, 0.8);
-      --bubble-shadow: 0 4px 12px rgba(100, 255, 218, 0.1);
+    body.theme-mint {
+      --bg-main: #e8f5e9;
+      --panel-bg: #ffffff;
+      --panel-border: rgba(102, 187, 106, 0.2);
+      --text-main: #1b5e20;
+      --text-muted: #66bb6a;
+      --accent-color: #2e7d32;
+      --accent-glow: 0 8px 24px rgba(46, 125, 50, 0.15);
+      --btn-grad: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
+      --msg-self-bg: #2e7d32;
+      --msg-other-bg: #e8f5e9;
+      --bubble-shadow: 0 4px 12px rgba(46, 125, 50, 0.06);
     }
 
-    body.theme-midnight-purple {
-      --bg-main: #0c001a;
-      --panel-bg: #1a0033;
-      --panel-border: rgba(157, 0, 255, 0.2);
-      --text-main: #f2e6ff;
-      --text-muted: #b399ff;
-      --accent-color: #9d00ff;
-      --accent-glow: 0 8px 24px rgba(157, 0, 255, 0.3);
-      --btn-grad: linear-gradient(135deg, #9d00ff 0%, #3a0066 100%);
-      --msg-self-bg: #9d00ff;
-      --msg-other-bg: #2d004d;
-      --bubble-shadow: 0 4px 12px rgba(157, 0, 255, 0.15);
+    body.theme-sunset {
+      --bg-main: #fbf5f3;
+      --panel-bg: #ffffff;
+      --panel-border: rgba(240, 98, 146, 0.2);
+      --text-main: #4a148c;
+      --text-muted: #f06292;
+      --accent-color: #ff5722;
+      --accent-glow: 0 8px 24px rgba(255, 87, 34, 0.2);
+      --btn-grad: linear-gradient(135deg, #f06292 0%, #ff5722 100%);
+      --msg-self-bg: #ff5722;
+      --msg-other-bg: #fce4ec;
+      --bubble-shadow: 0 4px 12px rgba(255, 87, 34, 0.1);
+    }
+
+    body.theme-rose {
+      --bg-main: #fff5f5;
+      --panel-bg: #ffffff;
+      --panel-border: rgba(244, 143, 177, 0.2);
+      --text-main: #880e4f;
+      --text-muted: #f48fb1;
+      --accent-color: #ec407a;
+      --accent-glow: 0 8px 24px rgba(236, 64, 122, 0.2);
+      --btn-grad: linear-gradient(135deg, #f48fb1 0%, #ec407a 100%);
+      --msg-self-bg: #ec407a;
+      --msg-other-bg: #fce4ec;
+      --bubble-shadow: 0 4px 12px rgba(236, 64, 122, 0.1);
+    }
+
+    body.theme-pikachu {
+      --bg-main: #fffde7;
+      --panel-bg: #ffffff;
+      --panel-border: rgba(253, 216, 53, 0.3);
+      --text-main: #212121;
+      --text-muted: #757575;
+      --accent-color: #fdd835;
+      --accent-glow: 0 8px 24px rgba(253, 216, 53, 0.3);
+      --btn-grad: linear-gradient(135deg, #ffeb3b 0%, #fbc02d 100%);
+      --msg-self-bg: #fdd835;
+      --msg-other-bg: #fffde7;
+      --bubble-shadow: 0 4px 12px rgba(253, 216, 53, 0.1);
     }
 
     * {
@@ -111,6 +139,7 @@
       overflow-x: hidden;
     }
 
+    /* Common Card Styling */
     .glass-card {
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
@@ -166,7 +195,7 @@
     .form-control:focus {
       border-color: var(--accent-color);
       background: var(--panel-bg);
-      box-shadow: 0 0 0 4px rgba(98, 0, 234, 0.08);
+      box-shadow: 0 0 0 4px rgba(94, 53, 177, 0.08);
     }
 
     .btn {
@@ -279,7 +308,7 @@
     }
 
     /* ==========================================================================
-       AVATAR SYSTEM & PREMIUM SELECTOR
+       AVATAR SYSTEM & LABELED CATEGORIES
        ========================================================================== */
     .avatar-selection-panel {
       margin-bottom: 1.5rem;
@@ -317,12 +346,16 @@
     }
 
     .avatar-section-title {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 800;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
     }
 
     .avatars-flex-row {
@@ -361,7 +394,7 @@
       font-size: 0.75rem;
       font-weight: 700;
       color: var(--accent-color);
-      background: rgba(98, 0, 234, 0.05);
+      background: rgba(94, 53, 177, 0.05);
       padding: 0.4rem 1rem;
       border-radius: 12px;
       border: none;
@@ -370,11 +403,11 @@
     }
 
     .custom-upload-avatar-btn:hover {
-      background: rgba(98, 0, 234, 0.1);
+      background: rgba(94, 53, 177, 0.1);
     }
 
     /* ==========================================================================
-       THEME SELECTION CARDS SYSTEM
+       THEME SELECTION CARD PREVIEWS (PRECISE SQUARE CARDS)
        ========================================================================== */
     .themes-grid-container {
       display: grid;
@@ -384,43 +417,52 @@
     }
 
     .theme-card-option {
-      background: rgba(0, 0, 0, 0.02);
-      border: 2px solid var(--panel-border);
+      background: #ffffff;
+      border: 2.5px solid var(--panel-border);
       border-radius: 16px;
-      padding: 0.85rem;
+      padding: 1rem;
       cursor: pointer;
-      text-align: left;
-      transition: all 0.2s ease;
-      position: relative;
+      text-align: center;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.02);
     }
 
     .theme-card-option.selected {
       border-color: var(--accent-color);
-      background: var(--panel-bg);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+      transform: scale(1.02);
+      box-shadow: var(--accent-glow);
     }
 
     .theme-card-option h4 {
       font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 0.5rem;
+      font-weight: 800;
+      color: #2d2a4a;
     }
 
-    .theme-color-preview-dots {
+    .theme-square-preview {
+      width: 100%;
+      height: 48px;
+      border-radius: 10px;
+      border: 1.5px solid var(--panel-border);
       display: flex;
-      gap: 0.3rem;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0.4rem;
     }
 
-    .color-dot-node {
-      width: 12px;
-      height: 12px;
+    .theme-square-preview .dot {
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
-      border: 1px solid rgba(0,0,0,0.08);
+      border: 1px solid rgba(255, 255, 255, 0.25);
     }
 
     /* ==========================================================================
-       PREMIUM CHAT SYSTEM DESIGN & SETTINGS BUTTON
+       CHAT SCREEN DESIGN (Chatter Inspired UI/UX Redux)
        ========================================================================== */
     #chat-screen {
       max-width: 820px;
@@ -484,13 +526,32 @@
     }
 
     .badge-accent {
-      background: rgba(98, 0, 234, 0.06);
+      background: rgba(94, 53, 177, 0.06);
       color: var(--accent-color);
     }
 
     /* Header Actions with Settings Dropdown */
     .header-actions-panel {
       position: relative;
+    }
+
+    .icon-btn {
+      background: rgba(0, 0, 0, 0.02);
+      border: 1.5px solid var(--panel-border);
+      color: var(--text-main);
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(0,0,0,0.05);
     }
 
     /* Floating Settings Dropdown */
@@ -544,7 +605,7 @@
 
     /* Pinned message banner */
     #pinned-banner {
-      background: rgba(98, 0, 234, 0.04);
+      background: rgba(94, 53, 177, 0.04);
       border-bottom: 1.5px solid rgba(98, 0, 234, 0.08);
       padding: 0.6rem 1.2rem;
       display: none;
@@ -591,12 +652,21 @@
       display: inline-block;
       box-shadow: 0 0 8px #10b981;
       animation: statusPulse 1.5s infinite;
+      margin-right: 0.5rem;
     }
 
     @keyframes statusPulse {
       0% { transform: scale(0.9); opacity: 0.6; }
       50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 12px #10b981; }
       100% { transform: scale(0.9); opacity: 0.6; }
+    }
+
+    /* Mention Highlight Ring */
+    .msg-wrapper.mentioned .msg-bubble {
+      border: 2px solid #fdd835;
+      box-shadow: 0 0 16px rgba(253, 216, 83, 0.4);
+      background: rgba(253, 216, 53, 0.08) !important;
+      color: var(--text-main) !important;
     }
 
     /* Message elements */
@@ -809,6 +879,92 @@
       background: rgba(0, 0, 0, 0.03);
     }
 
+    /* ==========================================================================
+       MODALS: APPROVE/KNOCK SYSTEM & WAITING STATE
+       ========================================================================== */
+    .request-dialog-box {
+      width: 100%;
+      max-width: 360px;
+      background: var(--panel-bg);
+      border-radius: 24px;
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--card-shadow);
+      padding: 1.5rem;
+      text-align: center;
+      animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .request-avatar-frame {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0.5rem auto;
+      border: 2.5px solid var(--accent-color);
+    }
+
+    .request-avatar-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .request-actions-grid {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.2rem;
+    }
+
+    .btn-approve {
+      flex: 1;
+      padding: 0.75rem;
+      background: #4caf50;
+      color: #ffffff;
+      border: none;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .btn-reject {
+      flex: 1;
+      padding: 0.75rem;
+      background: #f44336;
+      color: #ffffff;
+      border: none;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    /* Waiting screen */
+    #waiting-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .loader-pulse {
+      width: 52px;
+      height: 52px;
+      border: 4px solid rgba(0,0,0,0.05);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 1s infinite linear;
+      margin-bottom: 1.5rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     .toast-container {
       position: fixed;
       bottom: 24px;
@@ -889,7 +1045,7 @@
 </head>
 <body>
 
-  <!-- LOADING SCREEN -->
+  <!-- LOADING OVERLAY -->
   <div id="loading-overlay">
     <div class="spinner"></div>
     <p style="margin-top: 1rem; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em;">Loading Engine...</p>
@@ -903,7 +1059,7 @@
           <i class="fa-solid fa-ghost"></i>
         </div>
         <h1>GhostRoom</h1>
-        <p>Premium Decentralized Private Channels</p>
+        <p>Premium Secure Private Hubs</p>
       </div>
 
       <div class="tab-header">
@@ -914,7 +1070,7 @@
       <!-- Tab Content: Create Room -->
       <div id="tab-create" class="tab-pane active">
         
-        <!-- Premium Avatar Picker Panel (Boys & Girls) -->
+        <!-- Premium Avatar Picker Panel (Boys & Girls Categorized) -->
         <div class="avatar-selection-panel">
           <div class="selected-avatar-preview-container">
             <div class="avatar-main-frame">
@@ -923,35 +1079,35 @@
           </div>
           
           <div class="avatar-grid-wrapper">
-            <div class="avatar-section-title">Boys Pack</div>
+            <div class="avatar-section-title"><i class="fa-solid fa-mars"></i> Boys Pack</div>
             <div class="avatars-flex-row">
               <div class="avatar-option-dot selected" onclick="selectAvatarPreset('https://api.dicebear.com/7.x/adventurer/svg?seed=Leo', this)">
-                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Leo" alt="B1">
+                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Leo" alt="Boy 1">
               </div>
               <div class="avatar-option-dot" onclick="selectAvatarPreset('https://api.dicebear.com/7.x/adventurer/svg?seed=Felix', this)">
-                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Felix" alt="B2">
+                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Felix" alt="Boy 2">
               </div>
               <div class="avatar-option-dot" onclick="selectAvatarPreset('https://api.dicebear.com/7.x/adventurer/svg?seed=Jack', this)">
-                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Jack" alt="B3">
+                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Jack" alt="Boy 3">
               </div>
               <div class="avatar-option-dot" onclick="selectAvatarPreset('https://api.dicebear.com/7.x/adventurer/svg?seed=Marcus', this)">
-                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Marcus" alt="B4">
+                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Marcus" alt="Boy 4">
               </div>
             </div>
 
-            <div class="avatar-section-title">Girls Pack</div>
+            <div class="avatar-section-title"><i class="fa-solid fa-venus"></i> Girls Pack</div>
             <div class="avatars-flex-row">
               <div class="avatar-option-dot" onclick="selectAvatarPreset('https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe', this)">
-                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe" alt="G1">
+                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe" alt="Girl 1">
               </div>
               <div class="avatar-option-dot" onclick="selectAvatarPreset('https://api.dicebear.com/7.x/adventurer/svg?seed=Luna', this)">
-                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Luna" alt="G2">
+                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Luna" alt="Girl 2">
               </div>
               <div class="avatar-option-dot" onclick="selectAvatarPreset('https://api.dicebear.com/7.x/adventurer/svg?seed=Zina', this)">
-                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zina" alt="G3">
+                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zina" alt="Girl 3">
               </div>
               <div class="avatar-option-dot" onclick="selectAvatarPreset('https://api.dicebear.com/7.x/adventurer/svg?seed=Eva', this)">
-                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Eva" alt="G4">
+                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Eva" alt="Girl 4">
               </div>
             </div>
 
@@ -982,7 +1138,7 @@
           <label>Password (Optional)</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-shield-halved"></i>
-            <input type="password" id="create-room-pass" class="form-control" placeholder="Blank for unshielded access">
+            <input type="password" id="create-room-pass" class="form-control" placeholder="Required for instant bypass link">
           </div>
         </div>
 
@@ -1006,48 +1162,57 @@
           </div>
         </div>
 
-        <!-- Theme Selection Grid Cards -->
+        <!-- Theme Selection Grid Cards (Clear Square Card Previews) -->
         <div class="form-group">
           <label>Choose Room Atmosphere Theme</label>
           <div class="themes-grid-container">
             <div class="theme-card-option selected" id="theme-card-minimal-white" onclick="selectThemeCard('minimal-white')">
-              <h4>Minimal White</h4>
-              <div class="theme-color-preview-dots">
-                <div class="color-dot-node" style="background:#ffffff;"></div>
-                <div class="color-dot-node" style="background:#6200ea;"></div>
-                <div class="color-dot-node" style="background:#1f1d2c;"></div>
+              <h4>Chatter UI (Default)</h4>
+              <div class="theme-square-preview" style="background:#f3f4f9;">
+                <div class="dot" style="background:#5e35b1;"></div>
+                <div class="dot" style="background:#ffffff;"></div>
               </div>
             </div>
-            <div class="theme-card-option" id="theme-card-dark-neon" onclick="selectThemeCard('dark-neon')">
-              <h4>Dark Neon</h4>
-              <div class="theme-color-preview-dots">
-                <div class="color-dot-node" style="background:#12121e;"></div>
-                <div class="color-dot-node" style="background:#ff007f;"></div>
-                <div class="color-dot-node" style="background:#f3f4f6;"></div>
+            <div class="theme-card-option" id="theme-card-cyan" onclick="selectThemeCard('cyan')">
+              <h4>Cyan Night</h4>
+              <div class="theme-square-preview" style="background:#0a141d;">
+                <div class="dot" style="background:#00f2fe;"></div>
+                <div class="dot" style="background:#1e3040;"></div>
               </div>
             </div>
-            <div class="theme-card-option" id="theme-card-cyberpunk" onclick="selectThemeCard('cyberpunk')">
-              <h4>Cyberpunk</h4>
-              <div class="theme-color-preview-dots">
-                <div class="color-dot-node" style="background:#1f2833;"></div>
-                <div class="color-dot-node" style="background:#45f3ff;"></div>
-                <div class="color-dot-node" style="background:#66fcf1;"></div>
+            <div class="theme-card-option" id="theme-card-coffee" onclick="selectThemeCard('coffee')">
+              <h4>Coffee Espresso</h4>
+              <div class="theme-square-preview" style="background:#f5efe6;">
+                <div class="dot" style="background:#8d6e63;"></div>
+                <div class="dot" style="background:#ffffff;"></div>
               </div>
             </div>
-            <div class="theme-card-option" id="theme-card-glass-blue" onclick="selectThemeCard('glass-blue')">
-              <h4>Glass Blue</h4>
-              <div class="theme-color-preview-dots">
-                <div class="color-dot-node" style="background:#112240;"></div>
-                <div class="color-dot-node" style="background:#64ffda;"></div>
-                <div class="color-dot-node" style="background:#e6f1ff;"></div>
+            <div class="theme-card-option" id="theme-card-mint" onclick="selectThemeCard('mint')">
+              <h4>Mint Green</h4>
+              <div class="theme-square-preview" style="background:#e8f5e9;">
+                <div class="dot" style="background:#2e7d32;"></div>
+                <div class="dot" style="background:#ffffff;"></div>
               </div>
             </div>
-            <div class="theme-card-option" id="theme-card-midnight-purple" onclick="selectThemeCard('midnight-purple')">
-              <h4>Midnight Purple</h4>
-              <div class="theme-color-preview-dots">
-                <div class="color-dot-node" style="background:#1a0033;"></div>
-                <div class="color-dot-node" style="background:#9d00ff;"></div>
-                <div class="color-dot-node" style="background:#f2e6ff;"></div>
+            <div class="theme-card-option" id="theme-card-sunset" onclick="selectThemeCard('sunset')">
+              <h4>Sunset Glow</h4>
+              <div class="theme-square-preview" style="background:#fbf5f3;">
+                <div class="dot" style="background:#ff5722;"></div>
+                <div class="dot" style="background:#fce4ec;"></div>
+              </div>
+            </div>
+            <div class="theme-card-option" id="theme-card-rose" onclick="selectThemeCard('rose')">
+              <h4>Rose Petal</h4>
+              <div class="theme-square-preview" style="background:#fff5f5;">
+                <div class="dot" style="background:#ec407a;"></div>
+                <div class="dot" style="background:#ffffff;"></div>
+              </div>
+            </div>
+            <div class="theme-card-option" id="theme-card-pikachu" onclick="selectThemeCard('pikachu')">
+              <h4>Pikachu</h4>
+              <div class="theme-square-preview" style="background:#fffde7;">
+                <div class="dot" style="background:#fdd835;"></div>
+                <div class="dot" style="background:#212121;"></div>
               </div>
             </div>
           </div>
@@ -1062,7 +1227,7 @@
       <!-- Tab: Join Room -->
       <div id="tab-join" class="tab-pane">
         <div class="form-group">
-          <label>Room Identification Link or Code</label>
+          <label>Room Link / Hash ID</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-terminal"></i>
             <input type="text" id="join-room-id" class="form-control" placeholder="Paste join link or Room ID">
@@ -1077,7 +1242,7 @@
 
   <!-- ENTRANCE SCREEN -->
   <div id="entrance-screen" class="screen">
-    <div class="glass-card">
+    <div class="glass-card" id="entrance-form-wrap">
       <div class="logo-container">
         <div class="logo-badge">
           <i class="fa-solid fa-user-lock"></i>
@@ -1095,35 +1260,35 @@
         </div>
         
         <div class="avatar-grid-wrapper">
-          <div class="avatar-section-title">Boys Preset</div>
+          <div class="avatar-section-title"><i class="fa-solid fa-mars"></i> Boys Preset</div>
           <div class="avatars-flex-row">
             <div class="avatar-option-dot selected" onclick="selectAvatarPresetJoin('https://api.dicebear.com/7.x/adventurer/svg?seed=Leo', this)">
-              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Leo" alt="B1">
+              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Leo" alt="Boy 1">
             </div>
             <div class="avatar-option-dot" onclick="selectAvatarPresetJoin('https://api.dicebear.com/7.x/adventurer/svg?seed=Felix', this)">
-              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Felix" alt="B2">
+              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Felix" alt="Boy 2">
             </div>
             <div class="avatar-option-dot" onclick="selectAvatarPresetJoin('https://api.dicebear.com/7.x/adventurer/svg?seed=Jack', this)">
-              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Jack" alt="B3">
+              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Jack" alt="Boy 3">
             </div>
             <div class="avatar-option-dot" onclick="selectAvatarPresetJoin('https://api.dicebear.com/7.x/adventurer/svg?seed=Marcus', this)">
-              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Marcus" alt="B4">
+              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Marcus" alt="Boy 4">
             </div>
           </div>
 
-          <div class="avatar-section-title">Girls Preset</div>
+          <div class="avatar-section-title"><i class="fa-solid fa-venus"></i> Girls Preset</div>
           <div class="avatars-flex-row">
             <div class="avatar-option-dot" onclick="selectAvatarPresetJoin('https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe', this)">
-              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe" alt="G1">
+              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe" alt="Girl 1">
             </div>
             <div class="avatar-option-dot" onclick="selectAvatarPresetJoin('https://api.dicebear.com/7.x/adventurer/svg?seed=Luna', this)">
-              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Luna" alt="G2">
+              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Luna" alt="Girl 2">
             </div>
             <div class="avatar-option-dot" onclick="selectAvatarPresetJoin('https://api.dicebear.com/7.x/adventurer/svg?seed=Zina', this)">
-              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zina" alt="G3">
+              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zina" alt="Girl 3">
             </div>
             <div class="avatar-option-dot" onclick="selectAvatarPresetJoin('https://api.dicebear.com/7.x/adventurer/svg?seed=Eva', this)">
-              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Eva" alt="G4">
+              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Eva" alt="Girl 4">
             </div>
           </div>
 
@@ -1143,16 +1308,23 @@
       </div>
 
       <div class="form-group" id="entrance-password-group" style="display: none;">
-        <label>Passcode</label>
+        <label>Password</label>
         <div class="input-wrapper">
           <i class="fa-solid fa-key"></i>
-          <input type="password" id="entrance-password" class="form-control" placeholder="Identity Verification Passcode">
+          <input type="password" id="entrance-password" class="form-control" placeholder="Enter password to join directly">
         </div>
       </div>
 
       <button class="btn" onclick="submitEntranceForm()">
-        <i class="fa-solid fa-door-open"></i> Join Lobby Session
+        <i class="fa-solid fa-door-open"></i> Join Space Session
       </button>
+    </div>
+
+    <!-- Knock Waiting State Panel -->
+    <div class="glass-card" id="waiting-screen">
+      <div class="loader-pulse"></div>
+      <h3 style="margin-bottom: 0.5rem; font-weight:800;">Knocking on the Room...</h3>
+      <p style="color:var(--text-muted); font-size:0.9rem;">Waiting for the Host to approve your request. Please wait.</p>
     </div>
   </div>
 
@@ -1172,10 +1344,10 @@
         </div>
         
         <div class="header-actions-panel">
-          <button class="icon-btn" onclick="toggleSettingsMenuDropdown()" title="Room Operations">
+          <button class="icon-btn" onclick="toggleSettingsMenuDropdown()" title="Settings Panel">
             <i class="fa-solid fa-gear"></i>
           </button>
-          <!-- Unified Settings Menu Dropdown -->
+          <!-- Unified Settings Dropdown -->
           <div class="settings-dropdown-menu" id="settings-dropdown">
             <button class="settings-option-item" onclick="copyShareLink()">
               <i class="fa-solid fa-share-nodes"></i> Copy Invite Link
@@ -1228,6 +1400,24 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- APPROVAL OVERLAY FOR HOST -->
+  <div class="modal-overlay" id="approve-request-overlay">
+    <div class="request-dialog-box">
+      <h3 style="font-weight: 800; margin-bottom: 0.5rem;">Join Request</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem;">Someone is trying to connect to your room:</p>
+      
+      <div class="request-avatar-frame">
+        <img id="request-avatar-img" src="" alt="Avatar">
+      </div>
+      <h4 id="request-username-text" style="font-weight: 800; margin-top: 0.5rem; font-size: 1.1rem;">GuestName</h4>
+      
+      <div class="request-actions-grid">
+        <button class="btn-approve" onclick="resolveJoinRequest(true)">Approve</button>
+        <button class="btn-reject" onclick="resolveJoinRequest(false)">Reject</button>
+      </div>
     </div>
   </div>
 
@@ -1288,8 +1478,8 @@
     };
     let localTypingTimeout = null;
     let selectedUserContext = null;
+    let activePendingRequests = [];
 
-    // Advanced Content Filters
     const blockList = [
       /f[u]*c[k]+/gi, /s[h]*i[t]+/gi, /b[i]*t[c]*h/gi, /a[s]*s[h]*o[l]*e/gi,
       /c[u]*n[t]+/gi, /p[u]*s[y]+/gi, /c[h]*u[t]*i[y]*a/gi, /g[a]*n[d]+[u]*/gi,
@@ -1322,6 +1512,15 @@
           gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
           oscNode.start();
           oscNode.stop(audioCtx.currentTime + 0.08);
+        } else if (signalType === 'mention') {
+          // Special sound for mentions (Chirp/High-Frequency notification alert)
+          oscNode.type = 'triangle';
+          oscNode.frequency.setValueAtTime(880, audioCtx.currentTime);
+          oscNode.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.15);
+          gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+          oscNode.start();
+          oscNode.stop(audioCtx.currentTime + 0.2);
         }
       } catch (err) {}
     }
@@ -1396,7 +1595,6 @@
       menu.classList.toggle('active');
     }
 
-    // Auto close settings menu when clicking outside
     document.addEventListener('click', (e) => {
       const menu = document.getElementById('settings-dropdown');
       const settingsBtn = document.querySelector('.header-actions-panel');
@@ -1501,7 +1699,8 @@
             muted: false,
             banned: false,
             joinedAt: Date.now(),
-            avatarUrl: myUserSession.avatarUrl
+            avatarUrl: myUserSession.avatarUrl,
+            status: "approved"
           });
         })
         .then(() => {
@@ -1566,8 +1765,15 @@
                 const uData = userSnap.val();
                 if (uData && uData.banned) {
                   showBanOverlay();
-                } else {
+                } else if (uData && uData.status === "approved") {
                   initializeChatroom(roomId);
+                } else {
+                  // Fallback if cached but status altered
+                  document.getElementById('entrance-room-title').innerText = config.name;
+                  if (config.password) {
+                    document.getElementById('entrance-password-group').style.display = 'block';
+                  }
+                  showScreen('entrance-screen');
                 }
               });
             return;
@@ -1608,9 +1814,16 @@
           const config = snapshot.val();
           if (!config) return;
 
-          if (config.password && config.password !== enteredPass) {
-            showToast("Incorrect passcode validation.", "error");
-            return;
+          let hasPassword = config.password ? true : false;
+          let correctPasswordEntered = false;
+
+          if (hasPassword) {
+            if (config.password === enteredPass) {
+              correctPasswordEntered = true;
+            } else {
+              showToast("Incorrect validation passcode.", "error");
+              return;
+            }
           }
 
           return db.ref(`rooms/${currentRoomId}/users`).once('value')
@@ -1625,7 +1838,7 @@
               });
 
               if (nameCollision) {
-                showToast("Identity is claimed.", "warning");
+                showToast("Identity is claimed inside this lobby.", "warning");
                 return;
               }
 
@@ -1635,20 +1848,51 @@
               myUserSession.isHost = false;
               myUserSession.muted = false;
 
+              // If correct password provided OR room doesn't have a password set:
+              // Case 1: Room has password and correct password entered -> "approved" instantly
+              // Case 2: Room has no password -> set to "pending" (Must knock)
+              const joinStatus = (hasPassword && correctPasswordEntered) ? "approved" : "pending";
+
               const payload = {
+                id: newUserId,
                 name: enteredName,
                 isHost: false,
                 muted: false,
                 banned: false,
                 joinedAt: Date.now(),
-                avatarUrl: myUserSession.avatarUrl
+                avatarUrl: myUserSession.avatarUrl,
+                status: joinStatus
               };
 
-              return db.ref(`rooms/${currentRoomId}/users/${newUserId}`).set(payload)
+              db.ref(`rooms/${currentRoomId}/users/${newUserId}`).set(payload)
                 .then(() => {
                   storeSessionLocally(currentRoomId, newUserId, enteredName, false, myUserSession.avatarUrl);
-                  pushSystemMessage(`${enteredName} joined the room`, 'join');
-                  initializeChatroom(currentRoomId);
+                  
+                  if (joinStatus === "approved") {
+                    pushSystemMessage(`${enteredName} joined the room`, 'join');
+                    initializeChatroom(currentRoomId);
+                  } else {
+                    // Start Knocking Waiting Flow
+                    document.getElementById('entrance-form-wrap').style.display = "none";
+                    document.getElementById('waiting-screen').style.display = "flex";
+                    
+                    // Listen live to status change
+                    const statusListener = db.ref(`rooms/${currentRoomId}/users/${newUserId}/status`);
+                    statusListener.on('value', statusSnap => {
+                      const currentStatus = statusSnap.val();
+                      if (currentStatus === "approved") {
+                        statusListener.off();
+                        pushSystemMessage(`${enteredName} joined the room`, 'join');
+                        initializeChatroom(currentRoomId);
+                      } else if (currentStatus === "rejected") {
+                        statusListener.off();
+                        showToast("Your join request was rejected by the Host.", "error");
+                        setTimeout(() => {
+                          window.location.href = window.location.pathname;
+                        }, 2500);
+                      }
+                    });
+                  }
                 });
             });
         })
@@ -1714,6 +1958,17 @@
           }
         } else if (!myUserSession.isHost) {
           showBanOverlay();
+        }
+
+        // Host side Join Approvals checking (If status is pending)
+        if (myUserSession.isHost) {
+          activePendingRequests = [];
+          Object.keys(users).forEach(uId => {
+            if (users[uId].status === "pending") {
+              activePendingRequests.push(users[uId]);
+            }
+          });
+          renderNextPendingJoinRequest();
         }
       });
 
@@ -1791,7 +2046,7 @@
       let count = 0;
       Object.keys(usersObj).forEach(uId => {
         const user = usersObj[uId];
-        if (user.banned) return; 
+        if (user.banned || user.status === "pending") return; 
 
         count++;
         const li = document.createElement('li');
@@ -1803,7 +2058,6 @@
 
         const avatarImgUrl = user.avatarUrl || "https://api.dicebear.com/7.x/adventurer/svg?seed=Leo";
 
-        // Click handler to trigger host settings on active peer click (Fix for moderation controls)
         let clickActionStr = '';
         if (myUserSession.isHost && uId !== myUserSession.id) {
           clickActionStr = `onclick="setupHostActionDrawer(event, '${uId}', '${escapeHTML(user.name)}')" style="cursor:pointer;"`;
@@ -1818,6 +2072,35 @@
       });
 
       document.getElementById('user-count-badge').innerHTML = `<i class="fa-solid fa-user-group"></i> ${count} Peers`;
+    }
+
+    /* ==========================================================================
+       HOST SIDE APPROVALS QUEUE HANDLER
+       ========================================================================== */
+    function renderNextPendingJoinRequest() {
+      const overlay = document.getElementById('approve-request-overlay');
+      if (activePendingRequests.length > 0) {
+        const nextRequest = activePendingRequests[0];
+        document.getElementById('request-avatar-img').src = nextRequest.avatarUrl || "https://api.dicebear.com/7.x/adventurer/svg?seed=Leo";
+        document.getElementById('request-username-text').innerText = nextRequest.name;
+        overlay.classList.add('active');
+      } else {
+        overlay.classList.remove('active');
+      }
+    }
+
+    function resolveJoinRequest(isApproved) {
+      if (activePendingRequests.length === 0) return;
+      const resolvingUser = activePendingRequests[0];
+      
+      const newStatus = isApproved ? "approved" : "rejected";
+      
+      db.ref(`rooms/${currentRoomId}/users/${resolvingUser.id}/status`).set(newStatus)
+        .then(() => {
+          activePendingRequests.shift();
+          renderNextPendingJoinRequest();
+          showToast(`Request resolved successfully.`, "info");
+        });
     }
 
     /* ==========================================================================
@@ -1892,14 +2175,23 @@
       }
 
       const wrapper = document.createElement('div');
-      wrapper.className = `msg-wrapper ${isSelf ? 'self' : 'other'}`;
       wrapper.id = `msg-${messageId}`;
+
+      // Premium Mention Detector Regex
+      const mentionRegex = new RegExp(`@${myUserSession.name}\\b`, 'i');
+      const isMentioned = mentionRegex.test(msgData.text);
+
+      if (isMentioned) {
+        wrapper.className = `msg-wrapper other mentioned`;
+        emitChime('mention');
+      } else {
+        wrapper.className = `msg-wrapper ${isSelf ? 'self' : 'other'}`;
+      }
 
       const timeString = new Date(msgData.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const initialSeenByCount = msgData.seenBy ? Object.keys(msgData.seenBy).length : 1;
       const verifiedTickHtml = msgData.isHost ? ` <i class="fa-solid fa-circle-check verified-tick" title="Verified Host"></i>` : '';
 
-      // Direct trigger of host moderation popups on clicking username inside message bubbles
       const userClickEventAction = myUserSession.isHost && !isSelf 
         ? `onclick="setupHostActionDrawer(event, '${msgData.senderId}', '${escapeHTML(msgData.senderName)}', '${messageId}')"` 
         : `onclick="setupHostPinFallback(event, '${messageId}')"`;
@@ -1925,7 +2217,7 @@
       chatFeed.appendChild(wrapper);
       chatFeed.scrollTop = chatFeed.scrollHeight;
 
-      if (!isSelf) {
+      if (!isSelf && !isMentioned) {
         emitChime('message');
       }
     }
@@ -1938,7 +2230,7 @@
     }
 
     /* ==========================================================================
-       TYPING BROADCAST
+       TYPING STATUS INDICATORS
        ========================================================================== */
     function broadcastTypingStatus() {
       if (!currentRoomId || myUserSession.muted) return;
@@ -1981,7 +2273,7 @@
     }
 
     /* ==========================================================================
-       HOST PRIVILEGED MODERATION FLOWS (Fixed and Responsive)
+       HOST PRIVILEGED MODERATION FLOWS (Fixed context positioning)
        ========================================================================== */
     function setupHostActionDrawer(e, targetUserId, userName, messageId = null) {
       e.preventDefault();
@@ -1992,7 +2284,6 @@
       const menu = document.getElementById('host-context-menu');
       menu.style.display = 'block';
       
-      // Calculate responsive screen context positioning
       let topVal = e.pageY;
       let leftVal = e.pageX;
       
@@ -2011,7 +2302,6 @@
           : `<i class="fa-solid fa-microphone-slash"></i> Mute @${userName}`;
       });
 
-      // Show Pin Message options if clicked on message bubble
       let pinActionBtn = document.getElementById('host-pin-btn');
       if (messageId) {
         if (!pinActionBtn) {
@@ -2053,7 +2343,6 @@
       pinActionBtn.innerHTML = `<i class="fa-solid fa-thumbtack"></i> Pin Message`;
     }
 
-    // Close actions menu when clicking outside
     document.addEventListener('click', () => {
       const menu = document.getElementById('host-context-menu');
       if (menu) menu.style.display = 'none';
@@ -2073,7 +2362,7 @@
 
     function triggerBanAction() {
       if (!selectedUserContext) return;
-      if (confirm(`Surgical ban on: @${selectedUserContext.name}?`)) {
+      if (confirm(`Ban user: @${selectedUserContext.name}?`)) {
         db.ref(`rooms/${currentRoomId}/users/${selectedUserContext.id}/banned`).set(true)
           .then(() => {
             pushSystemMessage(`User ${selectedUserContext.name} was banned`, 'ban');
@@ -2120,7 +2409,7 @@
     }
 
     /* ==========================================================================
-       USER CONTEXT MODIFICATION ACTIONS
+       USER STATUS MODIFICATION OVERLAYS
        ========================================================================== */
     function showBanOverlay() {
       clearLocalSession(currentRoomId);
@@ -2143,10 +2432,10 @@
     }
 
     /* ==========================================================================
-       ROOM TEARDOWN CODES
+       TEARDOWN PROCEDURES
        ========================================================================== */
     function leaveRoom() {
-      if (confirm("Disconnect from current session?")) {
+      if (confirm("Disconnect from session?")) {
         cleanupUserPresence()
           .then(() => {
             forceExitLobby();
@@ -2181,11 +2470,15 @@
       myUserSession = { id: null, name: null, isHost: false, muted: false, avatarUrl: "https://api.dicebear.com/7.x/adventurer/svg?seed=Leo" };
       window.location.hash = '';
       
+      // Reset Waiting and entrance displays
+      document.getElementById('entrance-form-wrap').style.display = "block";
+      document.getElementById('waiting-screen').style.display = "none";
+
       showScreen('lobby-screen');
     }
 
     /* ==========================================================================
-       UI UTILITIES
+       UTILITIES & SYSTEM TRIGGERS
        ========================================================================== */
     function pushSystemMessage(messageText, sysType = 'info') {
       if (!currentRoomId) return;
