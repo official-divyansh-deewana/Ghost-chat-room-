@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GhostRoom — Temporary Private Chat Rooms</title>
+  
+  <!-- Inter & JetBrains Mono Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Firebase Legacy Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+  <style>
+    /* ==========================================================================
+       THEME VARIABLES & BASE STYLES
+       ========================================================================== */
+    :root {
+      /* Theme 1: Dark Neon (Default) */
+      --bg-gradient: linear-gradient(135deg, #09090e 0%, #141226 100%);
+      --panel-bg: rgba(20, 18, 38, 0.7);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-color: #c084fc;
+      --accent-glow: 0 0 15px rgba(192, 132, 252, 0.5);
+      --send-btn-bg: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+      --msg-self-bg: rgba(168, 85, 247, 0.25);
+      --msg-other-bg: rgba(255, 255, 255, 0.05);
+      --shadow-color: rgba(0, 0, 0, 0.5);
+      --card-blur: blur(16px);
+    }
+
+    /* Theme 2: Cyberpunk Glow */
+    body.theme-cyberpunk {
+      --bg-gradient: linear-gradient(135deg, #0a0a0c 0%, #1c0c1e 100%);
+      --panel-bg: rgba(15, 15, 19, 0.85);
+      --panel-border: rgba(24d, 224, 71, 0.25);
+      --text-main: #fde047;
+      --text-muted: #06b6d4;
+      --accent-color: #06b6d4;
+      --accent-glow: 0 0 15px rgba(6, 182, 212, 0.6);
+      --send-btn-bg: linear-gradient(135deg, #facc15 0%, #db2777 100%);
+      --msg-self-bg: rgba(219, 39, 119, 0.25);
+      --msg-other-bg: rgba(6, 182, 212, 0.1);
+      --shadow-color: rgba(250, 204, 21, 0.1);
+    }
+
+    /* Theme 3: Glass Blue */
+    body.theme-glass-blue {
+      --bg-gradient: linear-gradient(135deg, #041026 0%, #0d254c 100%);
+      --panel-bg: rgba(13, 37, 76, 0.4);
+      --panel-border: rgba(56, 189, 248, 0.2);
+      --text-main: #f0f9ff;
+      --text-muted: #7dd3fc;
+      --accent-color: #38bdf8;
+      --accent-glow: 0 0 18px rgba(56, 189, 248, 0.4);
+      --send-btn-bg: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+      --msg-self-bg: rgba(14, 165, 233, 0.3);
+      --msg-other-bg: rgba(255, 255, 255, 0.06);
+      --shadow-color: rgba(0, 0, 0, 0.3);
+    }
+
+    /* Theme 4: Midnight Purple */
+    body.theme-midnight-purple {
+      --bg-gradient: linear-gradient(135deg, #090214 0%, #190a32 100%);
+      --panel-bg: rgba(25, 10, 50, 0.65);
+      --panel-border: rgba(168, 85, 247, 0.15);
+      --text-main: #f5f3ff;
+      --text-muted: #c084fc;
+      --accent-color: #d8b4fe;
+      --accent-glow: 0 0 15px rgba(216, 180, 254, 0.4);
+      --send-btn-bg: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+      --msg-self-bg: rgba(124, 58, 237, 0.3);
+      --msg-other-bg: rgba(255, 255, 255, 0.04);
+      --shadow-color: rgba(124, 58, 237, 0.15);
+    }
+
+    /* Theme 5: Minimal Clean White */
+    body.theme-minimal-white {
+      --bg-gradient: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+      --panel-bg: rgba(255, 255, 255, 0.9);
+      --panel-border: rgba(0, 0, 0, 0.08);
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --accent-color: #4f46e5;
+      --accent-glow: 0 4px 12px rgba(79, 70, 229, 0.15);
+      --send-btn-bg: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+      --msg-self-bg: rgba(79, 70, 229, 0.1);
+      --msg-other-bg: rgba(0, 0, 0, 0.03);
+      --shadow-color: rgba(0, 0, 0, 0.05);
+      --card-blur: none;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    /* Common Card Styling */
+    .glass-card {
+      background: var(--panel-bg);
+      backdrop-filter: var(--card-blur);
+      -webkit-backdrop-filter: var(--card-blur);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      width: 100%;
+      max-width: 480px;
+      padding: 2rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-control {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text-main);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent-color);
+      box-shadow: var(--accent-glow);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      background: var(--send-btn-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:hover {
+      opacity: 0.95;
+    }
+
+    /* Screen management */
+    .screen {
+      display: none;
+      width: 100%;
+      max-width: 480px;
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tabs UI */
+    .tab-header {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 0.5rem;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding-bottom: 0.5rem;
+      position: relative;
+    }
+
+    .tab-btn.active {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--accent-color);
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Loading Screen overlay */
+    #loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-gradient);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.4s ease;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--accent-color);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Title Logo */
+    .logo-container {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .logo-container h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      background: linear-gradient(to right, var(--text-main), var(--accent-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .logo-container p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* ==========================================================================
+       CHAT SCREEN SPECIFIC LAYOUT
+       ========================================================================== */
+    #chat-screen {
+      max-width: 800px;
+      width: 100%;
+      height: 100vh;
+      display: none;
+      flex-direction: column;
+      padding: 1rem;
+    }
+
+    #chat-screen.active {
+      display: flex;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px var(--shadow-color);
+    }
+
+    /* Top Bar Panel */
+    .chat-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--panel-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .room-meta h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .room-stats-badges {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .badge-accent {
+      border: 1px solid var(--accent-color);
+      color: var(--accent-color);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--panel-border);
+      color: var(--text-main);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Pinned Message Banner */
+    #pinned-banner {
+      background: rgba(192, 132, 252, 0.1);
+      border-bottom: 1px solid var(--panel-border);
+      padding: 0.5rem 1rem;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      gap: 1rem;
+    }
+
+    #pinned-banner.active {
+      display: flex;
+    }
+
+    /* Main Chat Feed Layout */
+    .chat-body-wrap {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      scroll-behavior: smooth;
+    }
+
+    /* Members Side Drawer (Desktop view toggle) */
+    .members-drawer {
+      width: 200px;
+      border-left: 1px solid var(--panel-border);
+      background: rgba(0, 0, 0, 0.1);
+      display: none;
+      flex-direction: column;
+      padding: 1rem;
+    }
+
+    .members-drawer.active {
+      display: flex;
+    }
+
+    .members-drawer h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .member-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      overflow-y: auto;
+    }
+
+    .member-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Message Item Bubbles */
+    .msg-wrapper {
+      display: flex;
+      flex-direction: column;
+      max-width: 75%;
+      margin-bottom: 0.25rem;
+      animation: msgFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes msgFadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-wrapper.self {
+      align-self: flex-end;
+    }
+
+    .msg-wrapper.other {
+      align-self: flex-start;
+    }
+
+    .msg-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.15rem;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .msg-wrapper.self .msg-meta {
+      justify-content: flex-end;
+    }
+
+    .msg-bubble {
+      padding: 0.65rem 0.85rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      word-wrap: break-word;
+      position: relative;
+    }
+
+    .msg-wrapper.self .msg-bubble {
+      background: var(--msg-self-bg);
+      color: var(--text-main);
+      border-top-right-radius: 2px;
+    }
+
+    .msg-wrapper.other .msg-bubble {
+      background: var(--msg-other-bg);
+      color: var(--text-main);
+      border-top-left-radius: 2px;
+    }
+
+    .msg-footer-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+      padding: 0 0.15rem;
+    }
+
+    /* System/Event Messages */
+    .system-msg {
+      align-self: center;
+      font-size: 0.75rem;
+      color: var(--accent-color);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      margin: 0.5rem 0;
+      border: 1px solid var(--panel-border);
+    }
+
+    /* Bottom Input Panel */
+    .chat-footer {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--panel-border);
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    #typing-indicator {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+      min-height: 14px;
+      font-style: italic;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    #message-input {
+      flex: 1;
+    }
+
+    /* Host Controls Dropdown Context styling */
+    .host-action-menu {
+      position: absolute;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 0.5rem 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: none;
+    }
+
+    .host-action-menu button {
+      display: block;
+      width: 100%;
+      padding: 0.5rem 1rem;
+      background: none;
+      border: none;
+      color: var(--text-main);
+      text-align: left;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .host-action-menu button:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    /* ==========================================================================
+       MODALS, NOTIFICATIONS, & MOBILE OPTIMIZATIONS
+       ========================================================================== */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-width: 320px;
+      width: 100%;
+    }
+
+    .toast {
+      background: var(--panel-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--panel-border);
+      color: var(--text-main);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      animation: slideIn 0.2s ease forwards;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    /* Responsive breakpoints */
+    @media (max-width: 640px) {
+      body {
+        padding: 0;
+      }
+      .glass-card {
+        border-radius: 0;
+        min-height: 100vh;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      #chat-screen {
+        padding: 0;
+        height: 100vh;
+      }
+      .chat-container {
+        border-radius: 0;
+        border: none;
+        height: 100%;
+      }
+      .members-drawer {
+        position: absolute;
+        right: 0;
+        top: 60px;
+        bottom: 60px;
+        z-index: 10;
+        background: var(--panel-bg);
+        backdrop-filter: blur(20px);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOADING OVERLAY -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">Syncing with GhostRoom...</p>
+  </div>
+
+  <!-- LOBBY SCREEN (Create / Join Switchboard) -->
+  <div id="lobby-screen" class="screen active">
+    <div class="glass-card">
+      <div class="logo-container">
+        <h1>GHOSTROOM</h1>
+        <p>Decentralized Temporary Real-Time Hubs</p>
+      </div>
+
+      <div class="tab-header">
+        <button class="tab-btn active" onclick="switchTab('create')">Create Room</button>
+        <button class="tab-btn" onclick="switchTab('join')">Join Room</button>
+      </div>
+
+      <!-- Tab Content: Create Room -->
+      <div id="tab-create" class="tab-pane active">
+        <div class="form-group">
+          <label for="create-host-name">Your Display Name</label>
+          <input type="text" id="create-host-name" class="form-control" placeholder="e.g. Rahul" required>
+        </div>
+        <div class="form-group">
+          <label for="create-room-name">Room Name</label>
+          <input type="text" id="create-room-name" class="form-control" placeholder="e.g. Secret Discussion" required>
+        </div>
+        <div class="form-group">
+          <label for="create-room-pass">Password (Optional)</label>
+          <input type="password" id="create-room-pass" class="form-control" placeholder="Blank for open access">
+        </div>
+        <div class="form-group">
+          <label for="create-duration">Room Lifetime</label>
+          <select id="create-duration" class="form-control" onchange="toggleCustomHours(this.value)">
+            <option value="1">1 Hour</option>
+            <option value="24">24 Hours</option>
+            <option value="custom">Custom Hours</option>
+          </select>
+        </div>
+        <div class="form-group" id="custom-hours-group" style="display: none;">
+          <label for="create-custom-hours">Specify Hours</label>
+          <input type="number" id="create-custom-hours" class="form-control" min="1" max="168" value="2">
+        </div>
+        <div class="form-group">
+          <label for="create-theme">Global Room Theme</label>
+          <select id="create-theme" class="form-control">
+            <option value="dark-neon">Dark Neon</option>
+            <option value="cyberpunk">Cyberpunk Glow</option>
+            <option value="glass-blue">Glass Blue</option>
+            <option value="midnight-purple">Midnight Purple</option>
+            <option value="minimal-white">Minimal Clean White</option>
+          </select>
+        </div>
+        <button class="btn" onclick="createRoom()">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Deploy GhostRoom
+        </button>
+      </div>
+
+      <!-- Tab Content: Join Room Manual -->
+      <div id="tab-join" class="tab-pane">
+        <div class="form-group">
+          <label for="join-room-id">Room ID or Full Link</label>
+          <input type="text" id="join-room-id" class="form-control" placeholder="e.g. -NfKzB87dyas8">
+        </div>
+        <button class="btn" onclick="processManualJoinLink()">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Connect to Hub
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENTRANCE SCREEN (Pre-entry validations / Name & Password) -->
+  <div id="entrance-screen" class="screen">
+    <div class="glass-card">
+      <div class="logo-container">
+        <h2>Enter Room</h2>
+        <p id="entrance-room-title" style="color: var(--accent-color); font-weight: 500;"></p>
+      </div>
+
+      <div class="form-group">
+        <label for="entrance-username">Choose Your Name</label>
+        <input type="text" id="entrance-username" class="form-control" placeholder="Your Display Alias" required>
+      </div>
+
+      <div class="form-group" id="entrance-password-group" style="display: none;">
+        <label for="entrance-password">Room Password</label>
+        <input type="password" id="entrance-password" class="form-control" placeholder="Enter room credentials">
+      </div>
+
+      <button class="btn" onclick="submitEntranceForm()">
+        <i class="fa-solid fa-door-open"></i> Join Conversation
+      </button>
+    </div>
+  </div>
+
+  <!-- CHAT ROOM SCREEN -->
+  <div id="chat-screen" class="screen">
+    <div class="chat-container">
+      
+      <!-- Top Bar Stats Panel -->
+      <div class="chat-header">
+        <div class="room-meta">
+          <h2 id="chat-room-title">Syncing Room...</h2>
+          <div class="room-stats-badges">
+            <span class="badge badge-accent" id="time-left-badge"><i class="fa-solid fa-hourglass-half"></i> Calculating...</span>
+            <span class="badge" id="user-count-badge"><i class="fa-solid fa-user-group"></i> 0 Users</span>
+            <span class="badge" id="msg-count-badge"><i class="fa-solid fa-comment-dots"></i> 0 Messages</span>
+          </div>
+        </div>
+        
+        <div class="header-actions">
+          <button class="icon-btn" onclick="copyShareLink()" title="Copy Invite Link">
+            <i class="fa-solid fa-share-nodes"></i>
+          </button>
+          <button class="icon-btn" onclick="toggleMembersDrawer()" title="Toggle Participant List">
+            <i class="fa-solid fa-users"></i>
+          </button>
+          <button class="icon-btn" id="lock-room-btn" onclick="toggleRoomLock()" style="display: none;" title="Toggle Access Lock">
+            <i class="fa-solid fa-lock-open"></i>
+          </button>
+          <button class="icon-btn" onclick="leaveRoom()" title="Leave Chat Room" style="color: #ef4444;">
+            <i class="fa-solid fa-power-off"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pinned Message Banner -->
+      <div id="pinned-banner">
+        <div>
+          <i class="fa-solid fa-thumbtack" style="color: var(--accent-color); margin-right: 0.5rem;"></i>
+          <strong id="pinned-sender">Host:</strong> <span id="pinned-text">Pinned text...</span>
+        </div>
+        <button id="unpin-btn" onclick="unpinMessage()" style="display: none; background: none; border: none; color: var(--text-muted); cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="chat-body-wrap">
+        <!-- Message Feed Area -->
+        <div class="chat-messages" id="chat-messages">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Hidden Side Drawer: User list list -->
+        <div class="members-drawer" id="members-drawer">
+          <h3>Participants</h3>
+          <ul class="member-list" id="member-list">
+            <!-- Dynamic elements -->
+          </ul>
+        </div>
+      </div>
+
+      <!-- Typing indicator dynamic feedback panel -->
+      <div class="chat-footer">
+        <div id="typing-indicator"></div>
+        <div class="input-row">
+          <input type="text" id="message-input" class="form-control" placeholder="Say something secretly..." autocomplete="off">
+          <button class="btn" id="send-msg-btn" onclick="sendMessage()" style="width: auto;">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BANNED / MODAL DIALOG POPUPS -->
+  <div class="modal-overlay" id="ban-modal">
+    <div class="glass-card" style="text-align: center;">
+      <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+      <h2>Access Terminated</h2>
+      <p style="margin: 1rem 0; color: var(--text-muted);" id="ban-reason-text">You have been banned from this discussion space by the room host.</p>
+      <button class="btn" onclick="window.location.href = window.location.pathname">Return to Lobby</button>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- HOST ACTION CONTEXT MENU -->
+  <div class="host-action-menu" id="host-context-menu">
+    <button id="host-mute-btn" onclick="triggerMuteAction()">Mute User</button>
+    <button id="host-ban-btn" onclick="triggerBanAction()" style="color: #ef4444;">Ban User</button>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       FIREBASE CONFIGURATION & INITIALIZATION
+       ========================================================================== */
+    // Placeholders to be updated by the deploying administrator
+    const firebaseConfig = {
+    apiKey: "AIzaSyCOFm2XLXs8QW9ZZ2x4HeIJV6LOX0qfjB0",
+    authDomain: "chat-room-by-dev.firebaseapp.com",
+    databaseURL: "https://chat-room-by-dev-default-rtdb.firebaseio.com",
+    projectId: "chat-room-by-dev",
+    storageBucket: "chat-room-by-dev.firebasestorage.app",
+    messagingSenderId: "914264958238",
+    appI
+
+    // Instantiate compat application
+    let db;
+    try {
+      if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+      }
+    } catch (e) {
+      console.error("Firebase Initialization Failed: Verify configuration block.", e);
+    }
+
+    /* ==========================================================================
+       GLOBAL STATE VARIABLES
+       ========================================================================== */
+    let currentRoomId = null;
+    let myUserSession = {
+      id: null,
+      name: null,
+      isHost: false,
+      muted: false
+    };
+    let activeListeners = {};
+    let localTypingTimeout = null;
+    let selectedUserContext = null;
+
+    // Bad words blocklist for simple client-side content moderation
+    const blockList = [/f[u]*c[k]+/gi, /s[h]*i[t]+/gi, /b[i]*t[c]*h/gi, /a[s]*s[h]*o[l]*e/gi];
+
+    /* ==========================================================================
+       SOUND SYNTHESIS ENGINE (Native Web Audio API)
+       ========================================================================== */
+    function emitChime(signalType) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (!audioCtx) return;
+        
+        const oscNode = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscNode.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        if (signalType === 'join') {
+          oscNode.frequency.setValueAtTime(400, audioCtx.currentTime); 
+          oscNode.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.15); 
+          gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+          oscNode.start();
+          oscNode.stop(audioCtx.currentTime + 0.2);
+        } else if (signalType === 'message') {
+          oscNode.frequency.setValueAtTime(550, audioCtx.currentTime); 
+          gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+          oscNode.start();
+          oscNode.stop(audioCtx.currentTime + 0.1);
+        }
+      } catch (err) {
+        // Prevent silent failure errors on user-interaction restrictions
+      }
+    }
+
+    /* ==========================================================================
+       PAGE LIFECYCLE & INITIALIZATION
+       ========================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      // Fast check database config status
+      if (!db) {
+        showToast("Local setup warning: Update Firebase configurations configuration keys.", "warning");
+        document.getElementById('loading-overlay').style.display = 'none';
+        return;
+      }
+
+      evaluateHashRouting();
+      document.getElementById('loading-overlay').style.display = 'none';
+
+      // Event listener to shut down typing statuses on window close
+      window.addEventListener('beforeunload', cleanupUserPresence);
+
+      // Handle message submission on key press
+      document.getElementById('message-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          sendMessage();
+        } else {
+          broadcastTypingStatus();
+        }
+      });
+
+      // Clear Context Popups on page click
+      document.addEventListener('click', (e) => {
+        const menu = document.getElementById('host-context-menu');
+        if (menu && !e.target.closest('.msg-meta') && !e.target.closest('.host-action-menu')) {
+          menu.style.display = 'none';
+        }
+      });
+    });
+
+    // Handle deep-linking through URL hashes
+    function evaluateHashRouting() {
+      const hash = window.location.hash.trim().substring(1);
+      if (hash && hash.length > 5) {
+        prepareEntranceScreen(hash);
+      } else {
+        showScreen('lobby-screen');
+      }
+    }
+
+    /* ==========================================================================
+       SCREEN NAVIGATION UTILITIES
+       ========================================================================== */
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
+      const activeScr = document.getElementById(screenId);
+      if (activeScr) {
+        activeScr.classList.add('active');
+        if (screenId === 'chat-screen') {
+          activeScr.style.display = 'flex';
+        }
+      }
+    }
+
+    function switchTab(type) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+
+      if (type === 'create') {
+        document.querySelector('[onclick="switchTab(\'create\')"]').classList.add('active');
+        document.getElementById('tab-create').classList.add('active');
+      } else {
+        document.querySelector('[onclick="switchTab(\'join\')"]').classList.add('active');
+        document.getElementById('tab-join').classList.add('active');
+      }
+    }
+
+    function toggleCustomHours(value) {
+      const custGroup = document.getElementById('custom-hours-group');
+      custGroup.style.display = (value === 'custom') ? 'block' : 'none';
+    }
+
+    /* ==========================================================================
+       ROOM CREATION ENGINE
+       ========================================================================== */
+    function createRoom() {
+      const hostName = document.getElementById('create-host-name').value.trim();
+      const roomName = document.getElementById('create-room-name').value.trim();
+      const password = document.getElementById('create-room-pass').value.trim();
+      const theme = document.getElementById('create-theme').value;
+      const durationSelect = document.getElementById('create-duration').value;
+      
+      if (!hostName || !roomName) {
+        showToast("Display Name and Room Name are mandatory properties.", "error");
+        return;
+      }
+
+      let hours = 1;
+      if (durationSelect === '24') hours = 24;
+      else if (durationSelect === 'custom') {
+        hours = parseInt(document.getElementById('create-custom-hours').value) || 1;
+      }
+
+      const expiryDurationMs = hours * 60 * 60 * 1000;
+      const createdAt = Date.now();
+      const expiryTime = createdAt + expiryDurationMs;
+
+      // Register new room node
+      const newRoomRef = db.ref('rooms').push();
+      const roomId = newRoomRef.key;
+
+      const roomPayload = {
+        config: {
+          id: roomId,
+          name: roomName,
+          password: password || null,
+          theme: theme,
+          createdAt: createdAt,
+          expiryTime: expiryTime,
+          locked: false,
+          emptySince: null,
+          pinnedMessage: null
+        }
+      };
+
+      // Set host properties securely inside current process
+      const hostId = "user_" + Math.random().toString(36).substring(2, 11);
+      myUserSession.id = hostId;
+      myUserSession.name = hostName;
+      myUserSession.isHost = true;
+      myUserSession.muted = false;
+
+      newRoomRef.set(roomPayload)
+        .then(() => {
+          // Write Host User Record to Firebase
+          return db.ref(`rooms/${roomId}/users/${hostId}`).set({
+            name: hostName,
+            isHost: true,
+            muted: false,
+            banned: false,
+            joinedAt: Date.now()
+          });
+        })
+        .then(() => {
+          // Store locally for single-entry verification
+          storeSessionLocally(roomId, hostId, hostName, true);
+          
+          window.location.hash = roomId;
+          showToast("Room created successfully", "info");
+          initializeChatroom(roomId);
+        })
+        .catch(err => {
+          showToast("Fatal error deploying chat space: " + err.message, "error");
+        });
+    }
+
+    /* ==========================================================================
+       ENTRANCE SCREEN & LINK RESOLUTION
+       ========================================================================== */
+    function processManualJoinLink() {
+      const inputVal = document.getElementById('join-room-id').value.trim();
+      let matchedId = inputVal;
+      if (inputVal.includes('#')) {
+        matchedId = inputVal.substring(inputVal.indexOf('#') + 1);
+      }
+      if (matchedId.length > 5) {
+        window.location.hash = matchedId;
+        prepareEntranceScreen(matchedId);
+      } else {
+        showToast("Invalid Room ID Format", "error");
+      }
+    }
+
+    function prepareEntranceScreen(roomId) {
+      currentRoomId = roomId;
+      document.getElementById('loading-overlay').style.display = 'flex';
+
+      // Verify targeted room state first
+      db.ref(`rooms/${roomId}/config`).once('value')
+        .then(snapshot => {
+          const config = snapshot.val();
+          document.getElementById('loading-overlay').style.display = 'none';
+
+          if (!config) {
+            showToast("Room does not exist or has expired.", "error");
+            window.location.hash = '';
+            showScreen('lobby-screen');
+            return;
+          }
+
+          // Check if system is expired
+          if (Date.now() > config.expiryTime) {
+            showToast("Room validation expired.", "error");
+            teardownExpiredRoom(roomId);
+            return;
+          }
+
+          // Check session recovery
+          const cachedSession = retrieveSessionLocally(roomId);
+          if (cachedSession) {
+            myUserSession.id = cachedSession.id;
+            myUserSession.name = cachedSession.name;
+            myUserSession.isHost = cachedSession.isHost;
+            
+            // Verify status on DB directly
+            db.ref(`rooms/${roomId}/users/${cachedSession.id}`).once('value')
+              .then(userSnap => {
+                const uData = userSnap.val();
+                if (uData && uData.banned) {
+                  showBanOverlay();
+                } else {
+                  initializeChatroom(roomId);
+                }
+              });
+            return;
+          }
+
+          // Lock check
+          if (config.locked) {
+            showToast("This Room has been locked by the Host.", "warning");
+            showScreen('lobby-screen');
+            return;
+          }
+
+          // Initialize custom input interface
+          document.getElementById('entrance-room-title').innerText = config.name;
+          if (config.password) {
+            document.getElementById('entrance-password-group').style.display = 'block';
+          } else {
+            document.getElementById('entrance-password-group').style.display = 'none';
+          }
+          
+          showScreen('entrance-screen');
+        })
+        .catch(err => {
+          document.getElementById('loading-overlay').style.display = 'none';
+          showToast("Access Resolution Failure: " + err.message, "error");
+        });
+    }
+
+    function submitEntranceForm() {
+      const enteredName = document.getElementById('entrance-username').value.trim();
+      const enteredPass = document.getElementById('entrance-password').value.trim();
+
+      if (!enteredName) {
+        showToast("User Name is required.", "warning");
+        return;
+      }
+
+      db.ref(`rooms/${currentRoomId}/config`).once('value')
+        .then(snapshot => {
+          const config = snapshot.val();
+          if (!config) return;
+
+          // Authenticate room pass
+          if (config.password && config.password !== enteredPass) {
+            showToast("Incorrect Room Password.", "error");
+            return;
+          }
+
+          // Ensure name unique constraint per-room context
+          return db.ref(`rooms/${currentRoomId}/users`).once('value')
+            .then(usersSnap => {
+              let nameCollision = false;
+              let isSelfBanned = false;
+
+              usersSnap.forEach(u => {
+                const user = u.val();
+                if (user.name.toLowerCase() === enteredName.toLowerCase()) {
+                  nameCollision = true;
+                }
+              });
+
+              if (nameCollision) {
+                showToast("Name already active inside room.", "warning");
+                return;
+              }
+
+              // Register User Join Node
+              const newUserId = "user_" + Math.random().toString(36).substring(2, 11);
+              myUserSession.id = newUserId;
+              myUserSession.name = enteredName;
+              myUserSession.isHost = false;
+              myUserSession.muted = false;
+
+              const payload = {
+                name: enteredName,
+                isHost: false,
+                muted: false,
+                banned: false,
+                joinedAt: Date.now()
+              };
+
+              return db.ref(`rooms/${currentRoomId}/users/${newUserId}`).set(payload)
+                .then(() => {
+                  storeSessionLocally(currentRoomId, newUserId, enteredName, false);
+                  
+                  // Post system entry message
+                  pushSystemMessage(`${enteredName} joined the room`);
+                  initializeChatroom(currentRoomId);
+                });
+            });
+        })
+        .catch(err => {
+          showToast("Registration Exception: " + err.message, "error");
+        });
+    }
+
+    /* ==========================================================================
+       CORE CHATROOM SYNCHRONIZATION ENGINE
+       ========================================================================== */
+    function initializeChatroom(roomId) {
+      currentRoomId = roomId;
+      showScreen('chat-screen');
+
+      // Setup global configuration and theme state sync
+      const configPathRef = db.ref(`rooms/${roomId}/config`);
+      
+      configPathRef.on('value', snapshot => {
+        const config = snapshot.val();
+        if (!config) {
+          showToast("Critical Error: Chat reference has been unlinked.", "error");
+          forceExitLobby();
+          return;
+        }
+
+        // Apply visual theme globally
+        applyGlobalTheme(config.theme);
+
+        // Render Meta Info Headers
+        document.getElementById('chat-room-title').innerText = config.name;
+        
+        // Render Expiry Countdown Clock
+        updateCountdownTimer(config.expiryTime);
+
+        // Host Control Interface Adjustments
+        if (myUserSession.isHost) {
+          const lockBtn = document.getElementById('lock-room-btn');
+          lockBtn.style.display = 'flex';
+          lockBtn.innerHTML = config.locked ? `<i class="fa-solid fa-lock"></i>` : `<i class="fa-solid fa-lock-open"></i>`;
+          document.getElementById('unpin-btn').style.display = 'block';
+        }
+
+        // Render Pinned Messages
+        const pinnedBanner = document.getElementById('pinned-banner');
+        if (config.pinnedMessage) {
+          pinnedBanner.classList.add('active');
+          document.getElementById('pinned-sender').innerText = config.pinnedMessage.sender + ":";
+          document.getElementById('pinned-text').innerText = config.pinnedMessage.text;
+        } else {
+          pinnedBanner.classList.remove('active');
+        }
+      });
+
+      // Synchronize Live Users List
+      const usersRef = db.ref(`rooms/${roomId}/users`);
+      usersRef.on('value', snapshot => {
+        const users = snapshot.val() || {};
+        renderParticipantIndicators(users);
+
+        // Check for self ban/mute status modification live
+        const me = users[myUserSession.id];
+        if (me) {
+          if (me.banned) {
+            showBanOverlay();
+          }
+          if (me.muted !== myUserSession.muted) {
+            myUserSession.muted = me.muted;
+            adjustInputControlState(me.muted);
+          }
+        } else if (!myUserSession.isHost) {
+          // Fallback context validation
+          showBanOverlay();
+        }
+      });
+
+      // Fetch, watch & render message events chronologically
+      const messagesRef = db.ref(`rooms/${roomId}/messages`).orderByChild('timestamp');
+      
+      // Clean previous UI messages to prevent duplicates on reconnection
+      document.getElementById('chat-messages').innerHTML = '';
+
+      messagesRef.on('child_added', snapshot => {
+        const msg = snapshot.val();
+        appendMessageBubble(snapshot.key, msg);
+        markMessageAsRead(snapshot.key);
+      });
+
+      // Realtime listener for read/seen confirmations
+      messagesRef.on('child_changed', snapshot => {
+        const msg = snapshot.val();
+        updateMessageReadStatusOnUI(snapshot.key, msg);
+      });
+
+      // Monitor typist behaviors
+      db.ref(`rooms/${roomId}/users`).on('value', snapshot => {
+        const users = snapshot.val() || {};
+        updateTypingLabels(users);
+      });
+
+      // Start periodic countdown calculation
+      const timerInterval = setInterval(() => {
+        if (!currentRoomId) {
+          clearInterval(timerInterval);
+          return;
+        }
+        db.ref(`rooms/${roomId}/config/expiryTime`).once('value', snap => {
+          const expVal = snap.val();
+          if (expVal) {
+            updateCountdownTimer(expVal);
+            if (Date.now() > expVal) {
+              clearInterval(timerInterval);
+              teardownExpiredRoom(roomId);
+            }
+          }
+        });
+      }, 30000); // Poll once per 30s to preserve connection limits
+    }
+
+    /* ==========================================================================
+       THEME APPLICATION LOGIC
+       ========================================================================== */
+    function applyGlobalTheme(themeName) {
+      document.body.className = ''; // Wipe pre-existing theme bindings
+      if (themeName !== 'dark-neon') {
+        document.body.classList.add(`theme-${themeName}`);
+      }
+    }
+
+    /* ==========================================================================
+       ROOM TIMERS & EMPTY CLEANUP ENGINE
+       ========================================================================== */
+    function updateCountdownTimer(expiryTime) {
+      const remainingMs = expiryTime - Date.now();
+      const badge = document.getElementById('time-left-badge');
+      if (remainingMs <= 0) {
+        badge.innerHTML = `<i class="fa-solid fa-hourglass-end"></i> Expired`;
+        return;
+      }
+
+      const totalMinutes = Math.floor(remainingMs / 60000);
+      const hours = Math.floor(totalMinutes / 60);
+      const mins = totalMinutes % 60;
+
+      badge.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> ${hours}h ${mins}m left`;
+    }
+
+    function teardownExpiredRoom(roomId) {
+      db.ref(`rooms/${roomId}`).remove()
+        .then(() => {
+          showToast("Room lifetime reached. Cleaned data nodes.", "info");
+          forceExitLobby();
+        });
+    }
+
+    /* ==========================================================================
+       LIVE STATS & USER METRICS ENGINE
+       ========================================================================== */
+    function renderParticipantIndicators(usersObj) {
+      const userListElement = document.getElementById('member-list');
+      userListElement.innerHTML = '';
+      
+      let count = 0;
+      Object.keys(usersObj).forEach(uId => {
+        const user = usersObj[uId];
+        if (user.banned) return; // Hide banned entities
+
+        count++;
+        const li = document.createElement('li');
+        li.className = 'member-item';
+        
+        let statusString = '';
+        if (user.isHost) statusString += ' [Host]';
+        if (user.muted) statusString += ' <i class="fa-solid fa-volume-xmark" style="color:#ef4444; margin-left:4px;"></i>';
+
+        li.innerHTML = `
+          <span style="font-weight: 500;">${escapeHTML(user.name)}${statusString}</span>
+        `;
+        userListElement.appendChild(li);
+      });
+
+      document.getElementById('user-count-badge').innerHTML = `<i class="fa-solid fa-user-group"></i> ${count} Users`;
+    }
+
+    /* ==========================================================================
+       MESSAGE INPUT & TRANSMISSION LOGIC
+       ========================================================================== */
+    function sendMessage() {
+      if (myUserSession.muted) {
+        showToast("You are currently muted.", "error");
+        return;
+      }
+
+      const rawInputText = document.getElementById('message-input').value.trim();
+      if (!rawInputText) return;
+
+      // Local Content Filtering (Auto Moderation)
+      const sanitizedText = filterContentInMessage(rawInputText);
+
+      const payload = {
+        senderId: myUserSession.id,
+        senderName: myUserSession.name,
+        text: sanitizedText,
+        timestamp: Date.now(),
+        seenBy: {
+          [myUserSession.id]: true
+        }
+      };
+
+      db.ref(`rooms/${currentRoomId}/messages`).push(payload)
+        .then(() => {
+          document.getElementById('message-input').value = '';
+          // Reset local typing indicator
+          if (localTypingTimeout) clearTimeout(localTypingTimeout);
+          db.ref(`rooms/${currentRoomId}/users/${myUserSession.id}/typing`).set(false);
+        })
+        .catch(err => {
+          showToast("Failed to transmit text: " + err.message, "error");
+        });
+    }
+
+    function filterContentInMessage(text) {
+      let filtered = text;
+      blockList.forEach(regExPattern => {
+        filtered = filtered.replace(regExPattern, (matchedWord) => '*'.repeat(matchedWord.length));
+      });
+      return filtered;
+    }
+
+    function appendMessageBubble(messageId, msgData) {
+      const chatFeed = document.getElementById('chat-messages');
+      const isSelf = msgData.senderId === myUserSession.id;
+
+      // Handle raw state metrics additions
+      incrementMessageCountOnUI();
+
+      if (msgData.isSystem) {
+        const sysDiv = document.createElement('div');
+        sysDiv.className = 'system-msg';
+        sysDiv.innerText = msgData.text;
+        chatFeed.appendChild(sysDiv);
+        chatFeed.scrollTop = chatFeed.scrollHeight;
+        emitChime('join');
+        return;
+      }
+
+      const wrapper = document.createElement('div');
+      wrapper.className = `msg-wrapper ${isSelf ? 'self' : 'other'}`;
+      wrapper.id = `msg-${messageId}`;
+
+      const timeString = new Date(msgData.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // Build out standard seen parameters
+      const initialSeenByCount = msgData.seenBy ? Object.keys(msgData.seenBy).length : 1;
+
+      // Context menu action setup if Host triggers user click
+      const userClickEventAction = myUserSession.isHost && !isSelf 
+        ? `onclick="showHostContextMenu(event, '${msgData.senderId}', '${escapeHTML(msgData.senderName)}', '${messageId}')"` 
+        : `onclick="setupHostPinFallback(event, '${messageId}')"`;
+
+      wrapper.innerHTML = `
+        <div class="msg-meta" ${userClickEventAction} style="cursor: pointer;">
+          <strong style="color: var(--accent-color);">${escapeHTML(msgData.senderName)}</strong>
+          <span>${timeString}</span>
+        </div>
+        <div class="msg-bubble">
+          ${escapeHTML(msgData.text)}
+        </div>
+        <div class="msg-footer-info">
+          <span class="seen-indicator" id="seen-count-${messageId}">Seen by ${initialSeenByCount}</span>
+        </div>
+      `;
+
+      chatFeed.appendChild(wrapper);
+      chatFeed.scrollTop = chatFeed.scrollHeight;
+
+      if (!isSelf) {
+        emitChime('message');
+      }
+    }
+
+    function incrementMessageCountOnUI() {
+      const badge = document.getElementById('msg-count-badge');
+      let currentVal = parseInt(badge.innerText.replace(/\D/g, '')) || 0;
+      currentVal++;
+      badge.innerHTML = `<i class="fa-solid fa-comment-dots"></i> ${currentVal} Messages`;
+    }
+
+    /* ==========================================================================
+       TYPING & SEEN REALTIME LISTENERS
+       ========================================================================== */
+    function broadcastTypingStatus() {
+      if (!currentRoomId || myUserSession.muted) return;
+
+      db.ref(`rooms/${currentRoomId}/users/${myUserSession.id}/typing`).set(true);
+
+      if (localTypingTimeout) clearTimeout(localTypingTimeout);
+      
+      localTypingTimeout = setTimeout(() => {
+        db.ref(`rooms/${currentRoomId}/users/${myUserSession.id}/typing`).set(false);
+      }, 1500);
+    }
+
+    function updateTypingLabels(usersObj) {
+      const typistArr = [];
+      Object.keys(usersObj).forEach(uId => {
+        if (uId !== myUserSession.id && usersObj[uId].typing) {
+          typistArr.push(usersObj[uId].name);
+        }
+      });
+
+      const labelNode = document.getElementById('typing-indicator');
+      if (typistArr.length > 0) {
+        labelNode.innerText = `${typistArr.join(', ')} typing...`;
+      } else {
+        labelNode.innerText = '';
+      }
+    }
+
+    function markMessageAsRead(messageId) {
+      if (!currentRoomId) return;
+      db.ref(`rooms/${currentRoomId}/messages/${messageId}/seenBy/${myUserSession.id}`).set(true);
+    }
+
+    function updateMessageReadStatusOnUI(messageId, msgData) {
+      const node = document.getElementById(`seen-count-${messageId}`);
+      if (node && msgData.seenBy) {
+        const count = Object.keys(msgData.seenBy).length;
+        node.innerText = `Seen by ${count}`;
+      }
+    }
+
+    /* ==========================================================================
+       HOST PRIVILEGED ACTIONS & CONTROLS
+       ========================================================================== */
+    function toggleRoomLock() {
+      if (!myUserSession.isHost) return;
+
+      const pathRef = db.ref(`rooms/${currentRoomId}/config/locked`);
+      pathRef.once('value').then(snap => {
+        const currentVal = snap.val() || false;
+        pathRef.set(!currentVal).then(() => {
+          showToast(!currentVal ? "Room locked. New entries blocked." : "Room access opened.", "info");
+        });
+      });
+    }
+
+    function showHostContextMenu(e, targetUserId, userName, messageId) {
+      e.preventDefault();
+      selectedUserContext = { id: targetUserId, name: userName, messageId: messageId };
+      
+      const menu = document.getElementById('host-context-menu');
+      menu.style.display = 'block';
+      menu.style.top = `${e.pageY}px`;
+      menu.style.left = `${e.pageX}px`;
+
+      // Check current target mute state parameters to toggle text dynamically
+      db.ref(`rooms/${currentRoomId}/users/${targetUserId}/muted`).once('value', snap => {
+        const isMuted = snap.val() || false;
+        document.getElementById('host-mute-btn').innerHTML = isMuted 
+          ? `Unmute @${userName}` 
+          : `Mute @${userName}`;
+      });
+
+      // Inject Pin / Host parameters directly to Context options
+      let pinActionBtn = document.getElementById('host-pin-btn');
+      if (!pinActionBtn) {
+        pinActionBtn = document.createElement('button');
+        pinActionBtn.id = 'host-pin-btn';
+        pinActionBtn.onclick = triggerPinAction;
+        menu.appendChild(pinActionBtn);
+      }
+      pinActionBtn.innerText = `Pin Message`;
+    }
+
+    function setupHostPinFallback(e, messageId) {
+      // Allows non-hosts to view details but only lets hosts pin messages
+      if (!myUserSession.isHost) return;
+      
+      e.preventDefault();
+      selectedUserContext = { messageId: messageId };
+
+      const menu = document.getElementById('host-context-menu');
+      menu.style.display = 'block';
+      menu.style.top = `${e.pageY}px`;
+      menu.style.left = `${e.pageX}px`;
+
+      document.getElementById('host-mute-btn').style.display = 'none';
+      document.getElementById('host-ban-btn').style.display = 'none';
+
+      let pinActionBtn = document.getElementById('host-pin-btn');
+      if (!pinActionBtn) {
+        pinActionBtn = document.createElement('button');
+        pinActionBtn.id = 'host-pin-btn';
+        pinActionBtn.onclick = triggerPinAction;
+        menu.appendChild(pinActionBtn);
+      }
+      pinActionBtn.style.display = 'block';
+      pinActionBtn.innerText = `Pin Message`;
+    }
+
+    function triggerMuteAction() {
+      if (!selectedUserContext) return;
+      const targetPathRef = db.ref(`rooms/${currentRoomId}/users/${selectedUserContext.id}/muted`);
+      
+      targetPathRef.once('value').then(snap => {
+        const isMuted = snap.val() || false;
+        targetPathRef.set(!isMuted).then(() => {
+          showToast(`${selectedUserContext.name} was ${!isMuted ? 'muted' : 'unmuted'}.`, "info");
+        });
+      });
+    }
+
+    function triggerBanAction() {
+      if (!selectedUserContext) return;
+      if (confirm(`Confirm ban on user: @${selectedUserContext.name}?`)) {
+        db.ref(`rooms/${currentRoomId}/users/${selectedUserContext.id}/banned`).set(true)
+          .then(() => {
+            pushSystemMessage(`👋 User ${selectedUserContext.name} was banned`);
+            showToast(`User @${selectedUserContext.name} banned.`, "info");
+          });
+      }
+    }
+
+    function triggerPinAction() {
+      if (!selectedUserContext || !selectedUserContext.messageId) return;
+      
+      db.ref(`rooms/${currentRoomId}/messages/${selectedUserContext.messageId}`).once('value')
+        .then(snap => {
+          const mData = snap.val();
+          if (mData) {
+            db.ref(`rooms/${currentRoomId}/config/pinnedMessage`).set({
+              sender: mData.senderName,
+              text: mData.text
+            }).then(() => {
+              showToast("Message pinned to top.", "info");
+            });
+          }
+        });
+    }
+
+    function unpinMessage() {
+      if (!myUserSession.isHost) return;
+      db.ref(`rooms/${currentRoomId}/config/pinnedMessage`).set(null)
+        .then(() => {
+          showToast("Pinned message cleared.", "info");
+        });
+    }
+
+    /* ==========================================================================
+       USER INTERACTION & BAN OVERLAY UI ACTIONS
+       ========================================================================== */
+    function showBanOverlay() {
+      // Clear persistent parameters
+      clearLocalSession(currentRoomId);
+      document.getElementById('ban-modal').classList.add('active');
+    }
+
+    function adjustInputControlState(shouldMute) {
+      const msgInput = document.getElementById('message-input');
+      const sendBtn = document.getElementById('send-msg-btn');
+      
+      if (shouldMute) {
+        msgInput.disabled = true;
+        msgInput.placeholder = "You have been muted by the host.";
+        sendBtn.disabled = true;
+      } else {
+        msgInput.disabled = false;
+        msgInput.placeholder = "Say something secretly...";
+        sendBtn.disabled = false;
+      }
+    }
+
+    /* ==========================================================================
+       ROOM EXIT & TEARDOWN PREPARATION
+       ========================================================================== */
+    function leaveRoom() {
+      if (confirm("Confirm exit from this temporary room context?")) {
+        cleanupUserPresence()
+          .then(() => {
+            forceExitLobby();
+          });
+      }
+    }
+
+    function cleanupUserPresence() {
+      if (!currentRoomId || !myUserSession.id) return Promise.resolve();
+      
+      // Post system announcement message
+      pushSystemMessage(`${myUserSession.name} left the room`);
+
+      // De-register self node representation on exit
+      return db.ref(`rooms/${currentRoomId}/users/${myUserSession.id}`).remove()
+        .then(() => {
+          // If room has no active users remaining, initialize deletion check
+          return db.ref(`rooms/${currentRoomId}/users`).once('value');
+        })
+        .then(snap => {
+          if (!snap.exists()) {
+            // Immediately start a 10-minute cleanup timer, or clear outright.
+            // Client cleanup deletes room nodes completely to reduce trace impact
+            return db.ref(`rooms/${currentRoomId}`).remove();
+          }
+        });
+    }
+
+    function forceExitLobby() {
+      // Clear active listeners to avoid processing orphaned updates
+      if (currentRoomId) {
+        db.ref(`rooms/${currentRoomId}/config`).off();
+        db.ref(`rooms/${currentRoomId}/users`).off();
+        db.ref(`rooms/${currentRoomId}/messages`).off();
+      }
+
+      currentRoomId = null;
+      myUserSession = { id: null, name: null, isHost: false, muted: false };
+      window.location.hash = '';
+      
+      showScreen('lobby-screen');
+    }
+
+    /* ==========================================================================
+       HELPER UTILITIES
+       ========================================================================== */
+    function pushSystemMessage(messageText) {
+      if (!currentRoomId) return;
+      db.ref(`rooms/${currentRoomId}/messages`).push({
+        text: messageText,
+        isSystem: true,
+        timestamp: Date.now()
+      });
+    }
+
+    function storeSessionLocally(roomId, uId, uName, isHost) {
+      const payload = { id: uId, name: uName, isHost: isHost };
+      localStorage.setItem(`ghostroom_session_${roomId}`, JSON.stringify(payload));
+    }
+
+    function retrieveSessionLocally(roomId) {
+      const dataStr = localStorage.getItem(`ghostroom_session_${roomId}`);
+      return dataStr ? JSON.parse(dataStr) : null;
+    }
+
+    function clearLocalSession(roomId) {
+      localStorage.removeItem(`ghostroom_session_${roomId}`);
+    }
+
+    function copyShareLink() {
+      const linkToCopy = window.location.href;
+      navigator.clipboard.writeText(linkToCopy)
+        .then(() => {
+          showToast("Shareable link copied to clipboard.", "info");
+        })
+        .catch(err => {
+          showToast("Copy failed: " + err, "error");
+        });
+    }
+
+    function toggleMembersDrawer() {
+      const drawer = document.getElementById('members-drawer');
+      drawer.classList.toggle('active');
+    }
+
+    function showToast(message, type = "info") {
+      const toastContainer = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      
+      let icon = '<i class="fa-solid fa-circle-info" style="color:var(--accent-color);"></i>';
+      if (type === "error") {
+        icon = '<i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i>';
+      } else if (type === "warning") {
+        icon = '<i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b;"></i>';
+      }
+
+      toast.innerHTML = `${icon} <span>${message}</span>`;
+      toastContainer.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.animation = 'slideIn 0.2s reverse forwards';
+        setTimeout(() => toast.remove(), 200);
+      }, 3500);
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          "'": '&#39;',
+          '"': '&quot;'
+        }[tag] || tag)
+      );
+    }
+  </script>
+</body>
+</html>
